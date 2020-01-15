@@ -13,29 +13,76 @@ coderband_time_signatures = {'2/2', '4/4', '3/4', '2/4', '6/8', '3/8'}
 
 coderband_parsed_table = {}
 
+coderband_rhythmic_style_table = {}
+
+
+def _build_triad_rhythmic_map(c, rhythmic_map):
+    if c.isTriad():
+        curr_octave = 2
+        curr_pitch_class = -1
+        n = note.Note(c.root().name)
+        if n.pitch.pitchClass > curr_pitch_class:
+            n.octave = curr_octave
+        else:
+            n.octave = curr_octave + 1
+
+        curr_pitch_class = n.pitch.pitchClass
+        rhythmic_map[1] = n
+
+        n = note.Note(c.third.name)
+        if n.pitch.pitchClass > curr_pitch_class:
+            n.octave = curr_octave
+        else:
+            n.octave = curr_octave + 1
+
+        curr_pitch_class = n.pitch.pitchClass
+        rhythmic_map[2] = n
+
+        n = note.Note(c.fifth.name)
+        if n.pitch.pitchClass > curr_pitch_class:
+            n.octave = curr_octave
+        else:
+            n.octave = curr_octave + 1
+
+        curr_pitch_class = n.pitch.pitchClass
+        rhythmic_map[3] = n
+
+        curr_octave = 3
+        curr_pitch_class = -1
+        n = note.Note(c.root().name)
+        if n.pitch.pitchClass > curr_pitch_class:
+            n.octave = curr_octave
+        else:
+            n.octave = curr_octave + 1
+
+        curr_pitch_class = n.pitch.pitchClass
+        rhythmic_map[4] = n
+
+        n = note.Note(c.third.name)
+        if n.pitch.pitchClass > curr_pitch_class:
+            n.octave = curr_octave
+        else:
+            n.octave = curr_octave + 1
+
+        curr_pitch_class = n.pitch.pitchClass
+        rhythmic_map[5] = n
+
+        n = note.Note(c.fifth.name)
+        if n.pitch.pitchClass > curr_pitch_class:
+            n.octave = curr_octave
+        else:
+            n.octave = curr_octave + 1
+
+        curr_pitch_class = n.pitch.pitchClass
+        rhythmic_map[6] = n
+
+
 # p - part, c - chord, t - time signature
 def coderband_rhythmic_generator(p, c, t):
-    rhythmic_style = [1, 3, 5, 3, 6, 3, 5, 3]
+    rhythmic_style = [1, 2, 3, 4, 5, 4, 3, 2]
     rhythmic_map = {}
-    if c.isTriad():
-        n = note.Note(c.root().name)
-        n.octave = 2
-        rhythmic_map[1] = n
-        n = note.Note(c.third.name)
-        n.octave = 2
-        rhythmic_map[2] = n
-        n = note.Note(c.fifth.name)
-        n.octave = 2
-        rhythmic_map[3] = n
-        n = note.Note(c.root().name)
-        n.octave = 3
-        rhythmic_map[4] = n
-        n = note.Note(c.third.name)
-        n.octave = 3
-        rhythmic_map[5] = n
-        n = note.Note(c.fifth.name)
-        n.octave = 3
-        rhythmic_map[6] = n
+
+    _build_triad_rhythmic_map(c, rhythmic_map)
 
     for i in rhythmic_style:
         n = rhythmic_map[i]
