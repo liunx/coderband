@@ -4,7 +4,7 @@ from music21 import *
 import copy
 import json
 
-environment.set('musicxmlPath', '/usr/bin/musescore3')
+environment.set('musicxmlPath', '/usr/bin/musescore')
 
 def read_xml():
     c = converter.parse('demo.xml')
@@ -90,29 +90,60 @@ def chordProgress():
     s.show()
 
 def demo():
-    scaleDegreeProgress = ["I", "IV", "V", "I"]
-    scaleDegreeMap = {"I": "C", "IV": "F", "V": "G"}
-    kf = key.Key('C')
+    scaleDegreeProgress = ["I", "II", "III", "IV", "V", "VII", "I"]
+    scaleDegreeMap = {"I": "P1", "II": "M2", "III": "M3", "IV": "P4", "V": "P5", "VI": "M6", "VII": "M7"}
+    fromKey = 'C'
+    toKey = 'F'
 
     c = converter.parse('rythmic_01.mxl')
+    # transpose to new key
+    i = interval.Interval(note.Note(fromKey), note.Note(toKey))
+    c.transpose(i, inPlace=True)
     treblePart = c.parts[0]
     basePart = c.parts[1]
     with open("rythmic_01.json") as js:
         jsData = json.load(js)
 
     s = stream.Stream()
-    s.append(key.Key(origKey))
+    s.append(key.Key(toKey))
     s.append(meter.TimeSignature('4/4'))
     p1 = stream.Part()
     p2 = stream.Part()
-    s.insert(0, p1)
-    s.insert(0, p2)
+    s.append(p1)
+    s.append(p2)
     p1.append(clef.TrebleClef())
+    p1.append(key.Key(toKey))
+    p1.append(meter.TimeSignature('4/4'))
     p2.append(clef.BassClef())
+    p2.append(key.Key(toKey))
+    p2.append(meter.TimeSignature('4/4'))
+    fromScaleDegree = None
+    toScaleDegree = None
     for scaleDegree in scaleDegreeProgress:
-        pass
+        if fromScaleDegree is None:
+            fromScaleDegree = scaleDegree
+        if toScaleDegree is None:
+            toScaleDegree = scaleDegree
 
-    s.show('text')
+        intv = scaleDegreeMap[scaleDegree]
+        if intv in ["P1", "M2", "M3"]:
+            tp = treblePart.measure(2)
+            bp = basePart.measure(2)
+        if intv in ["P4"]:
+            tp = treblePart.measure(4)
+            bp = basePart.measure(4)
+        if intv in ["P5"]:
+            tp = treblePart.measure(3)
+            bp = basePart.measure(3)
+            intv = interval.subtract([intv, "P8"])
+        if intv in ["M6", "M7"]:
+            tp = treblePart.measure(3)
+            bp = basePart.measure(3)
+            intv = interval.subtract([intv, "P8"])
+        p1.append(tp.transpose(intv))
+        p2.append(bp.transpose(intv))
+
+    s.show()
 
 if  __name__ == "__main__":
     demo()
