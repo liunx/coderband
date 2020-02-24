@@ -91,13 +91,19 @@ def chordProgress():
 
 def demo():
     scaleDegreeProgress = ["I", "II", "III", "IV", "V", "VII", "I"]
-    scaleDegreeMap = {"I": "P1", "II": "M2", "III": "M3", "IV": "P4", "V": "P5", "VI": "M6", "VII": "M7"}
+    majorScaleDegreeMap = {"I": "P1", "II": "M2", "III": "M3", "IV": "P4", "V": "P5", "VI": "M6", "VII": "M7"}
+    minorScaleDegreeMap = {"i": "P1", "ii": "M2", "iii": "M3", "iv": "P4", "v": "P5", "vi": "M6", "vii": "M7"}
+    keyIntervalMap = {"C": "P1", "C#": "A1", "D": "M2", "D#": "A2", "E": "M3", "F": "P4", "F#": "A4", "G": "P5", "G#": "A5", "A": "M6", "A#": "A6", "B": "M7"}
     fromKey = 'C'
-    toKey = 'F'
+    toKey = 'B'
 
     c = converter.parse('rythmic_01.mxl')
+
     # transpose to new key
     i = interval.Interval(note.Note(fromKey), note.Note(toKey))
+    delta = interval.Interval('P4')
+    if i.semitones > delta.semitones:
+        i = interval.subtract([i, "P8"])
     c.transpose(i, inPlace=True)
     treblePart = c.parts[0]
     basePart = c.parts[1]
@@ -117,15 +123,10 @@ def demo():
     p2.append(clef.BassClef())
     p2.append(key.Key(toKey))
     p2.append(meter.TimeSignature('4/4'))
-    fromScaleDegree = None
-    toScaleDegree = None
-    for scaleDegree in scaleDegreeProgress:
-        if fromScaleDegree is None:
-            fromScaleDegree = scaleDegree
-        if toScaleDegree is None:
-            toScaleDegree = scaleDegree
 
-        intv = scaleDegreeMap[scaleDegree]
+    for scaleDegree in scaleDegreeProgress:
+
+        intv = majorScaleDegreeMap[scaleDegree]
         if intv in ["P1", "M2", "M3"]:
             tp = treblePart.measure(2)
             bp = basePart.measure(2)
@@ -143,7 +144,7 @@ def demo():
         p1.append(tp.transpose(intv))
         p2.append(bp.transpose(intv))
 
-    s.show()
+    s.show('text')
 
 if  __name__ == "__main__":
     demo()
