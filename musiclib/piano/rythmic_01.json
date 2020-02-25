@@ -1,14 +1,3 @@
 {
-    "measures": [
-        "null",
-        {
-            "inversion": 0
-        },
-        {
-            "inversion": 1
-        },
-        {
-            "inversion": 2
-        }
-    ]
+    "inversion": [2, 3, 4]
 }
