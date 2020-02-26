@@ -42,7 +42,7 @@ triadInversionMap = {
     'M3': [2, 0, 1],
     'P4': [2, 0, 1],
     'd5': [2, 1, 0],
-    'P5': [2, 1, 0],
+    'P5': [1, 2, 0],
     'm6': [1, 2, 0],
     'M6': [1, 2, 0],
     'm7': [0, 1, 2],
@@ -68,8 +68,8 @@ def read_xml():
     c = converter.parse('demo.xml')
     p = c.parts[0]
     p2 = p.transpose('P-8')
-    #k = key.Key('D')
-    #p2.insert(0, k)
+    # = key.Key('D')
+    #p2.insert(0, )
     f2 = p2.flat
     f2.show('text')
     f2.show()
@@ -267,47 +267,50 @@ def calcInterval():
     print(newMap)
 
 
-def loadMusicXml(xmlFile, jsonFile):
+def loadMusicXml(newKey, xmlFile, jsonFile):
     datMap = {}
     c = converter.parse(xmlFile)
     with open(jsonFile) as js:
         jsData = json.load(js)
-    print(jsData)
+    oldKey = jsData['key']
+    intv = interval.Interval(note.Note(oldKey), note.Note(newKey))
+    c.transpose(intv, inPlace=True)
+    p = c.parts[1]
     invs = jsData['inversion']
     for i in range(len(invs)):
-        datMap[i] = c.measure(invs[i])
+        # get notes part
+        m = p.measure(invs[i])
+        datMap[i] = m
 
     return datMap
 
 def createPianoScore(myKey):
     s = stream.Stream()
-    p1 = stream.Part()
     p2 = stream.Part()
-    s.append(p1)
     s.append(p2)
-    p1.append(clef.TrebleClef())
-    p1.append(key.Key(myKey))
-    p1.append(meter.TimeSignature('4/4'))
     p2.append(clef.BassClef())
     p2.append(key.Key(myKey))
     p2.append(meter.TimeSignature('4/4'))
     return s
 
-def transposeScore(oldScore, intv):
+def transposeScore(s, key):
     pass
 
-def appendScore(myScore, newScore):
-    newScore.show('text')
+def appendMeasure(myScore, newMeasure):
+    p = myScore[0]
+    p.append(newMeasure)
 
 def outputMusicScore(s):
-    s.show('text')
+    debugShow(s[0])
+    #s.show()
 
 def demo2():
-    key = 'C'
-    scaleDegreeProgress = ["I", "vi", "IV", "V", "ii", "V", "I"]
+    key = 'G'
+    scaleDegreeProgress = ["IV", "V", "III", "VI", "II", "V", "I"]
+    scaleDegreeProgress = ["I", "IV", "V", "IV", "I"]
     keyScales = scalesMap[key]
-    jsDat = loadMusicXml('rythmic_01.mxl', 'rythmic_01.json')
-    s = createPianoScore('C')
+    jsDat = loadMusicXml(key, 'rythmic_01.mxl', 'rythmic_01.json')
+    s = createPianoScore(key)
     fromScale = None
     fromInversion = 0
     toScale = None
@@ -319,17 +322,21 @@ def demo2():
         fromNote = note.Note(keyScales[fromScale])
         toNote = note.Note(keyScales[toScale])
         intv = interval.Interval(fromNote, toNote)
-        print(fromNote.name, toNote.name, intv.name)
         if intv.direction < 0:
             intv.reverse()
-        f1 = triadInversionMap['P1']
-        t1 = triadInversionMap[intv.name]
+            t1 = triadInversionMap['P1']
+            f1 = triadInversionMap[intv.name]
+        else:
+            f1 = triadInversionMap['P1']
+            t1 = triadInversionMap[intv.name]
         newMap = dict(zip(f1, t1))
-        print("new map: {}".format(newMap))
         toInversion = newMap[fromInversion]
-        print("Inversion: from {} to {}".format(fromInversion, toInversion))
-        s1 = jsDat[toInversion]
-        appendScore(s, s1)
+        print("fromKey: {}, inversion: {}, toKey: {}, inversion: {}, interval: {}"\
+              .format(fromNote.name, fromInversion, toNote.name, toInversion, intv.name))
+        m = jsDat[toInversion]
+        intv = interval.Interval(note.Note(keyScales['I']), toNote)
+        m = m.transpose(intv)
+        appendMeasure(s, m)
 
         fromScale = scale
         fromInversion = toInversion
