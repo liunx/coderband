@@ -18,18 +18,24 @@ scalesMap = {
           'i': 'E', 'ii': 'F#', 'iii': 'G#', 'iv': 'A', 'v': 'B', 'vi': 'C#', 'vii': 'D#'},
     'B': {'I': 'B', 'II': 'C#', 'III': 'D#', 'IV': 'E', 'V': 'F#', 'VI': 'G#', 'VII': 'A#',
           'i': 'B', 'ii': 'C#', 'iii': 'D#', 'iv': 'E', 'v': 'F#', 'vi': 'G#', 'vii': 'A#'},
-    'F#': {'I': 'F#', 'II': 'G#', 'III': 'A#', 'IV': 'B', 'V': 'C#', 'VI': 'D#', 'VII': 'F',
-           'i': 'F#', 'ii': 'G#', 'iii': 'A#', 'iv': 'B', 'v': 'C#', 'vi': 'D#', 'vii': 'F'},
-    'C#': {'I': 'C#', 'II': 'D#', 'III': 'F', 'IV': 'F#', 'V': 'G#', 'VI': 'A#', 'VII': 'C',
-           'i': 'C#', 'ii': 'D#', 'iii': 'F', 'iv': 'F#', 'v': 'G#', 'vi': 'A#', 'vii': 'C'},
-    'G#': {'I': 'G#', 'II': 'A#', 'III': 'C', 'IV': 'C#', 'V': 'D#', 'VI': 'F', 'VII': 'G',
-           'i': 'G#', 'ii': 'A#', 'iii': 'C', 'iv': 'C#', 'v': 'D#', 'vi': 'F', 'vii': 'G'},
-    'D#': {'I': 'D#', 'II': 'F', 'III': 'G', 'IV': 'G#', 'V': 'A#', 'VI': 'C', 'VII': 'D',
-           'i': 'D#', 'ii': 'F', 'iii': 'G', 'iv': 'G#', 'v': 'A#', 'vi': 'C', 'vii': 'D'},
-    'A#': {'I': 'A#', 'II': 'C', 'III': 'D', 'IV': 'D#', 'V': 'F', 'VI': 'G', 'VII': 'A',
-           'i': 'A#', 'ii': 'C', 'iii': 'D', 'iv': 'D#', 'v': 'F', 'vi': 'G', 'vii': 'A'},
-    'F': {'I': 'F', 'II': 'G', 'III': 'A', 'IV': 'A#', 'V': 'C', 'VI': 'D', 'VII': 'E',
-          'i': 'F', 'ii': 'G', 'iii': 'A', 'iv': 'A#', 'v': 'C', 'vi': 'D', 'vii': 'E'},
+    'C-': {'I': 'C-', 'II': 'D-', 'III': 'E-', 'IV': 'F-', 'V': 'G-', 'VI': 'A-', 'VII': 'B-',
+          'i': 'C-', 'ii': 'D-', 'iii': 'E-', 'iv': 'F-', 'v': 'G-', 'vi': 'A-', 'vii': 'B-'},
+    'F#': {'I': 'F#', 'II': 'G#', 'III': 'A#', 'IV': 'B', 'V': 'C#', 'VI': 'D#', 'VII': 'E#',
+           'i': 'F#', 'ii': 'G#', 'iii': 'A#', 'iv': 'B', 'v': 'C#', 'vi': 'D#', 'vii': 'E#'},
+    'G-': {'I': 'G-', 'II': 'A-', 'III': 'B-', 'IV': 'C-', 'V': 'D-', 'VI': 'E-', 'VII': 'F',
+           'i': 'G-', 'ii': 'A-', 'iii': 'B-', 'iv': 'C-', 'v': 'D-', 'vi': 'E-', 'vii': 'F'},
+    'C#': {'I': 'C#', 'II': 'D#', 'III': 'E#', 'IV': 'F#', 'V': 'G#', 'VI': 'A#', 'VII': 'B#',
+           'i': 'C#', 'ii': 'D#', 'iii': 'E#', 'iv': 'F#', 'v': 'G#', 'vi': 'A#', 'vii': 'B#'},
+    'D-': {'I': 'D-', 'II': 'E-', 'III': 'F', 'IV': 'G-', 'V': 'A-', 'VI': 'B-', 'VII': 'C',
+           'i': 'D-', 'ii': 'E-', 'iii': 'F', 'iv': 'G-', 'v': 'A-', 'vi': 'B-', 'vii': 'C'},
+    'A-': {'I': 'A-', 'II': 'B-', 'III': 'C', 'IV': 'D-', 'V': 'E-', 'VI': 'F', 'VII': 'G-',
+           'i': 'A-', 'ii': 'B-', 'iii': 'C', 'iv': 'D-', 'v': 'E-', 'vi': 'F', 'vii': 'G-'},
+    'E-': {'I': 'E-', 'II': 'F', 'III': 'G', 'IV': 'A-', 'V': 'B-', 'VI': 'C', 'VII': 'D',
+           'i': 'E-', 'ii': 'F', 'iii': 'G', 'iv': 'A-', 'v': 'B-', 'vi': 'C', 'vii': 'D'},
+    'B-': {'I': 'B-', 'II': 'C', 'III': 'D', 'IV': 'E-', 'V': 'F', 'VI': 'G', 'VII': 'A',
+           'i': 'B-', 'ii': 'C', 'iii': 'D', 'iv': 'E-', 'v': 'F', 'vi': 'G', 'vii': 'A'},
+    'F': {'I': 'F', 'II': 'G', 'III': 'A', 'IV': 'B-', 'V': 'C', 'VI': 'D', 'VII': 'E',
+          'i': 'F', 'ii': 'G', 'iii': 'A', 'iv': 'B-', 'v': 'C', 'vi': 'D', 'vii': 'E'},
     'C': {'I': 'C', 'II': 'D', 'III': 'E', 'IV': 'F', 'V': 'G', 'VI': 'A', 'VII': 'B',
           'i': 'C', 'ii': 'D', 'iii': 'E', 'iv': 'F', 'v': 'G', 'vi': 'A', 'vii': 'B'}}
 
@@ -152,9 +158,9 @@ def outputMusicScore(s):
     debugShow(s[0])
     #s.show()
 
-def changeChordAttrib(measure, scale, key):
+def changeChordAttrib(measure, scale, newKey):
     chordFrom = chord.Chord(measure)
-    chordTo = roman.RomanNumeral(scale, key)
+    chordTo = roman.RomanNumeral(scale, newKey)
 
     if chordFrom.isMajorTriad() and chordTo.isMajorTriad():
         return
@@ -166,13 +172,10 @@ def changeChordAttrib(measure, scale, key):
             if n.name == fromThirdName:
                 n.name = toThirdName
 
-def demo2():
-    key = 'C'
-    scaleDegreeProgress = ["I", "IV", "V", "iii", "vi", "ii", "V", "I"]
-    #scaleDegreeProgress = ["I", "IV", "V", "IV", "I"]
-    keyScales = scalesMap[key]
-    jsDat = loadMusicXml(key, 'rythmic_01.mxl', 'rythmic_01.json')
-    s = createPianoScore(key)
+def demo2(scaleDegreeProgress, newKey):
+    keyScales = scalesMap[newKey]
+    jsDat = loadMusicXml(newKey, 'rythmic_01.mxl', 'rythmic_01.json')
+    s = createPianoScore(newKey)
     fromScale = None
     fromInversion = 0
     fromMeasure = None
@@ -185,7 +188,11 @@ def demo2():
         toScale = scale
         fromNote = note.Note(keyScales[fromScale])
         toNote = note.Note(keyScales[toScale])
+        # fix argument chords
         intv = interval.Interval(fromNote, toNote)
+        print("fromNote: {}, toNote: {}".format(fromNote.name, toNote.name))
+        if intv.name not in triadInversionMap:
+            intv = interval.Interval(intv.semitones)
         if intv.direction < 0:
             intv = intv.reverse()
             t1 = triadInversionMap['P1']
@@ -215,7 +222,7 @@ def demo2():
             else:
                 m.transpose('P-8', inPlace=True)
 
-        changeChordAttrib(m, toScale, key)
+        changeChordAttrib(m, toScale, newKey)
         appendMeasure(s, m)
 
         fromScale = scale
@@ -226,4 +233,13 @@ def demo2():
 
 
 if  __name__ == "__main__":
-    demo2()
+    newKeys = scalesMap.keys()
+    #newKeys = ['F#', 'A-']
+    scaleDegreeProgress = [["I", "IV", "V", "iii", "vi", "ii", "V", "I"],
+                           ["I", "V", "IV", "V", "I"],
+                           ["I", "IV", "V", "IV", "I"]]
+    for k in newKeys:
+        print("======================= {} ==============================".format(k))
+        for s in scaleDegreeProgress:
+            demo2(s, k)
+            print("=========================================================")
