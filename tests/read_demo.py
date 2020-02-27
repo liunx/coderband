@@ -305,16 +305,18 @@ def outputMusicScore(s):
     #s.show()
 
 def demo2():
-    key = 'G'
-    scaleDegreeProgress = ["IV", "V", "III", "VI", "II", "V", "I"]
+    key = 'C'
+    scaleDegreeProgress = ["I", "IV", "V", "III", "VI", "II", "V", "I"]
     scaleDegreeProgress = ["I", "IV", "V", "IV", "I"]
     keyScales = scalesMap[key]
     jsDat = loadMusicXml(key, 'rythmic_01.mxl', 'rythmic_01.json')
     s = createPianoScore(key)
     fromScale = None
     fromInversion = 0
+    fromMeasure = None
     toScale = None
     toInversion = 0
+    toMeasure = None
     for scale in scaleDegreeProgress:
         if fromScale is None:
             fromScale = scale
@@ -323,7 +325,7 @@ def demo2():
         toNote = note.Note(keyScales[toScale])
         intv = interval.Interval(fromNote, toNote)
         if intv.direction < 0:
-            intv.reverse()
+            intv = intv.reverse()
             t1 = triadInversionMap['P1']
             f1 = triadInversionMap[intv.name]
         else:
@@ -336,10 +338,26 @@ def demo2():
         m = jsDat[toInversion]
         intv = interval.Interval(note.Note(keyScales['I']), toNote)
         m = m.transpose(intv)
+        if fromMeasure is None:
+            fromMeasure = m
+        toMeasure = m
+
+        # compare the lowest pitches
+        fromBass = chord.Chord(fromMeasure).bass()
+        toBass = chord.Chord(toMeasure).bass()
+        intv = interval.Interval(fromBass, toBass)
+        semitoneMajor3 = interval.Interval('M3').semitones
+        if abs(intv.semitones) > semitoneMajor3:
+            if intv.direction < 0:
+                m.transpose('P8', inPlace=True)
+            else:
+                m.transpose('P-8', inPlace=True)
+
         appendMeasure(s, m)
 
         fromScale = scale
         fromInversion = toInversion
+        fromMeasure = toMeasure
 
     outputMusicScore(s)
 
