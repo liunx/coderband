@@ -152,10 +152,24 @@ def outputMusicScore(s):
     debugShow(s[0])
     #s.show()
 
+def changeChordAttrib(measure, scale, key):
+    chordFrom = chord.Chord(measure)
+    chordTo = roman.RomanNumeral(scale, key)
+
+    if chordFrom.isMajorTriad() and chordTo.isMajorTriad():
+        return
+
+    fromThirdName = chordFrom.third.name
+    toThirdName = chordTo.third.name
+    if chordFrom.isMajorTriad() and chordTo.isMinorTriad():
+        for n in measure.notes:
+            if n.name == fromThirdName:
+                n.name = toThirdName
+
 def demo2():
     key = 'C'
-    scaleDegreeProgress = ["I", "IV", "V", "III", "VI", "II", "V", "I"]
-    scaleDegreeProgress = ["I", "IV", "V", "IV", "I"]
+    scaleDegreeProgress = ["I", "IV", "V", "iii", "vi", "ii", "V", "I"]
+    #scaleDegreeProgress = ["I", "IV", "V", "IV", "I"]
     keyScales = scalesMap[key]
     jsDat = loadMusicXml(key, 'rythmic_01.mxl', 'rythmic_01.json')
     s = createPianoScore(key)
@@ -201,6 +215,7 @@ def demo2():
             else:
                 m.transpose('P-8', inPlace=True)
 
+        changeChordAttrib(m, toScale, key)
         appendMeasure(s, m)
 
         fromScale = scale
