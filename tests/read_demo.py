@@ -76,7 +76,13 @@ def debugShow(p):
     for m in p.getElementsByClass(stream.Measure):
         s = s + "|"
         for n in m.notes:
-            s = s + " {} ".format(n.pitch)
+            if type(n) == note.Note:
+                s = s + " {} ".format(n.pitch)
+            elif type(n) == chord.Chord:
+                s = s + "{"
+                for n1 in n.notes:
+                    s = s + " {} ".format(n1.pitch)
+                s = s + "} "
         s = s + "|\n"
     print(s)
 
@@ -140,11 +146,20 @@ def loadMusicXml(newKey, xmlFile, jsonFile):
 
 def createPianoScore(myKey):
     s = stream.Stream()
-    p2 = stream.Part()
-    s.append(p2)
+    p1 = stream.PartStaff()
+    p1.partName = "Treble"
+    p1.append(clef.TrebleClef())
+    p1.append(key.Key(myKey))
+    p1.append(meter.TimeSignature('4/4'))
+
+    p2 = stream.PartStaff()
+    p2.partName = "Base"
     p2.append(clef.BassClef())
     p2.append(key.Key(myKey))
     p2.append(meter.TimeSignature('4/4'))
+
+    s.append(p1)
+    s.append(p2)
     return s
 
 def transposeScore(s, key):
@@ -156,7 +171,7 @@ def appendMeasure(myScore, newMeasure):
 
 def outputMusicScore(s):
     debugShow(s[0])
-    #s.show()
+    s.show('text')
 
 def changeChordAttrib(measure, scale, newKey):
     chordFrom = chord.Chord(measure)
@@ -169,13 +184,16 @@ def changeChordAttrib(measure, scale, newKey):
     toThirdName = chordTo.third.name
     if chordFrom.isMajorTriad() and chordTo.isMinorTriad():
         for n in measure.notes:
-            if n.name == fromThirdName:
-                n.name = toThirdName
+            if type(n) == note.Note:
+                if n.name == fromThirdName:
+                    n.name = toThirdName
+            elif type(n) == chord.Chord:
+                for n1 in n.notes:
+                    if n1.name == fromThirdName:
+                        n1.name = toThirdName
 
-def demo2(scaleDegreeProgress, newKey):
+def scoreProcess(scaleDegreeProgress, newKey, jsDat, s):
     keyScales = scalesMap[newKey]
-    jsDat = loadMusicXml(newKey, 'rythmic_01.mxl', 'rythmic_01.json')
-    s = createPianoScore(newKey)
     fromScale = None
     fromInversion = 0
     fromMeasure = None
@@ -190,7 +208,6 @@ def demo2(scaleDegreeProgress, newKey):
         toNote = note.Note(keyScales[toScale])
         # fix argument chords
         intv = interval.Interval(fromNote, toNote)
-        print("fromNote: {}, toNote: {}".format(fromNote.name, toNote.name))
         if intv.name not in triadInversionMap:
             intv = interval.Interval(intv.semitones)
         if intv.direction < 0:
@@ -229,17 +246,29 @@ def demo2(scaleDegreeProgress, newKey):
         fromInversion = toInversion
         fromMeasure = toMeasure
 
-    outputMusicScore(s)
 
 
 if  __name__ == "__main__":
-    newKeys = scalesMap.keys()
-    #newKeys = ['F#', 'A-']
-    scaleDegreeProgress = [["I", "IV", "V", "iii", "vi", "ii", "V", "I"],
-                           ["I", "V", "IV", "V", "I"],
-                           ["I", "IV", "V", "IV", "I"]]
+    xmlFile = '../musiclib/piano/rythmic_02.mxl'
+    jsFile = '../musiclib/piano/rythmic_02.json'
+    debug = True
+    if not debug:
+        newKeys = scalesMap.keys()
+        scaleDegreeProgress = [["I", "IV", "V", "iii", "vi", "ii", "V", "I"],
+                               ["I", "IV", "V", "I"],
+                               ["vi", "ii", "V", "I"],
+                               ["I", "vi", "ii", "V"],
+                               ["ii", "V", "I"],
+                               ["I", "IV", "ii", "V", "I"]]
+    else:
+        newKeys = ['C']
+        scaleDegreeProgress = [["I", "IV", "V", "iii", "vi", "ii", "V", "I"]]
+
     for k in newKeys:
         print("======================= {} ==============================".format(k))
-        for s in scaleDegreeProgress:
-            demo2(s, k)
+        for scales in scaleDegreeProgress:
+            jsDat = loadMusicXml(k, xmlFile, jsFile)
+            scores = createPianoScore(k)
+            scoreProcess(scales, k, jsDat, scores)
+            outputMusicScore(scores)
             print("=========================================================")
