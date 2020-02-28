@@ -135,12 +135,14 @@ def loadMusicXml(newKey, xmlFile, jsonFile):
     oldKey = jsData['key']
     intv = interval.Interval(note.Note(oldKey), note.Note(newKey))
     c.transpose(intv, inPlace=True)
-    p = c.parts[1]
+
+    tp = c.parts[0]
+    bp = c.parts[1]
     invs = jsData['inversion']
     for i in range(len(invs)):
-        # get notes part
-        m = p.measure(invs[i])
-        datMap[i] = m
+        tm = tp.measure(invs[i])
+        bm = bp.measure(invs[i])
+        datMap[i] = [tm, bm]
 
     return datMap
 
@@ -165,47 +167,63 @@ def createPianoScore(myKey):
 def transposeScore(s, key):
     pass
 
-def appendMeasure(myScore, newMeasure):
-    p = myScore[0]
-    p.append(newMeasure)
+def measureAppend(scores, measures):
+    for p, m in zip(scores, measures):
+        p.append(m)
 
 def outputMusicScore(s):
-    debugShow(s[0])
-    s.show('text')
+    for p in s:
+        debugShow(p)
+    #s.show('text')
 
-def changeChordAttrib(measure, scale, newKey):
-    chordFrom = chord.Chord(measure)
-    chordTo = roman.RomanNumeral(scale, newKey)
-
+def chordAttribChange(measure, scale, keyNew):
+    if len(measure.notes) == 0:
+        return
+    chordFrom = chord.Chord(measure.notes)
+    chordTo = roman.RomanNumeral(scale, keyNew)
     if chordFrom.isMajorTriad() and chordTo.isMajorTriad():
         return
-
-    fromThirdName = chordFrom.third.name
-    toThirdName = chordTo.third.name
+    thirdNameFrom = chordFrom.third.name
+    thirdNameTo = chordTo.third.name
     if chordFrom.isMajorTriad() and chordTo.isMinorTriad():
         for n in measure.notes:
             if type(n) == note.Note:
-                if n.name == fromThirdName:
-                    n.name = toThirdName
+                if n.name == thirdNameFrom:
+                    n.name = thirdNameTo
             elif type(n) == chord.Chord:
                 for n1 in n.notes:
-                    if n1.name == fromThirdName:
-                        n1.name = toThirdName
+                    if n1.name == thirdNameFrom:
+                        n1.name = thirdNameTo
 
-def scoreProcess(scaleDegreeProgress, newKey, jsDat, s):
-    keyScales = scalesMap[newKey]
-    fromScale = None
-    fromInversion = 0
-    fromMeasure = None
-    toScale = None
-    toInversion = 0
-    toMeasure = None
+
+def measureTranspose(measureFrom, measureTo):
+    if len(measureFrom.notes) == 0 or len(measureTo.notes) == 0:
+        return
+    bassFrom = chord.Chord(measureFrom.notes).bass()
+    bassTo = chord.Chord(measureTo.notes).bass()
+    intv = interval.Interval(bassFrom, bassTo)
+    semitoneMajor3 = interval.Interval('M3').semitones
+    if abs(intv.semitones) > semitoneMajor3:
+        if intv.direction < 0:
+            measureTo.transpose('P8', inPlace=True)
+        else:
+            measureTo.transpose('P-8', inPlace=True)
+
+
+def scoreProcess(scaleDegreeProgress, keyNew, jsDat, s):
+    keyScales = scalesMap[keyNew]
+    scaleFrom = None
+    inversionFrom = 0
+    measureFrom = None
+    scaleTo = None
+    inversionTo = 0
+    measureTo = None
     for scale in scaleDegreeProgress:
-        if fromScale is None:
-            fromScale = scale
-        toScale = scale
-        fromNote = note.Note(keyScales[fromScale])
-        toNote = note.Note(keyScales[toScale])
+        if scaleFrom is None:
+            scaleFrom = scale
+        scaleTo = scale
+        fromNote = note.Note(keyScales[scaleFrom])
+        toNote = note.Note(keyScales[scaleTo])
         # fix argument chords
         intv = interval.Interval(fromNote, toNote)
         if intv.name not in triadInversionMap:
@@ -218,42 +236,32 @@ def scoreProcess(scaleDegreeProgress, newKey, jsDat, s):
             f1 = triadInversionMap['P1']
             t1 = triadInversionMap[intv.name]
         newMap = dict(zip(f1, t1))
-        toInversion = newMap[fromInversion]
-        print("fromKey: {}, inversion: {}, toKey: {}, inversion: {}, interval: {}"\
-              .format(fromNote.name, fromInversion, toNote.name, toInversion, intv.name))
-        m = jsDat[toInversion]
+        inversionTo = newMap[inversionFrom]
         intv = interval.Interval(note.Note(keyScales['I']), toNote)
-        m = m.transpose(intv)
-        if fromMeasure is None:
-            fromMeasure = m
-        toMeasure = m
+        tm = jsDat[inversionTo][0]
+        bm = jsDat[inversionTo][1]
+        tm = tm.transpose(intv)
+        bm = bm.transpose(intv)
+        if measureFrom is None:
+            measureFrom = [tm, bm]
+        measureTo = [tm, bm]
+        for f, t in measureFrom, measureTo:
+            measureTranspose(f, t)
+            chordAttribChange(t, scaleTo, keyNew)
+        measureAppend(s, measureTo)
 
-        # compare the lowest pitches
-        fromBass = chord.Chord(fromMeasure).bass()
-        toBass = chord.Chord(toMeasure).bass()
-        intv = interval.Interval(fromBass, toBass)
-        semitoneMajor3 = interval.Interval('M3').semitones
-        if abs(intv.semitones) > semitoneMajor3:
-            if intv.direction < 0:
-                m.transpose('P8', inPlace=True)
-            else:
-                m.transpose('P-8', inPlace=True)
-
-        changeChordAttrib(m, toScale, newKey)
-        appendMeasure(s, m)
-
-        fromScale = scale
-        fromInversion = toInversion
-        fromMeasure = toMeasure
+        scaleFrom = scale
+        inversionFrom = inversionTo
+        measureFrom = measureTo
 
 
 
 if  __name__ == "__main__":
-    xmlFile = '../musiclib/piano/rythmic_02.mxl'
-    jsFile = '../musiclib/piano/rythmic_02.json'
+    xmlFile = '../musiclib/piano/rythmic_05.mxl'
+    jsFile = '../musiclib/piano/rythmic_05.json'
     debug = True
     if not debug:
-        newKeys = scalesMap.keys()
+        keysNew = scalesMap.keys()
         scaleDegreeProgress = [["I", "IV", "V", "iii", "vi", "ii", "V", "I"],
                                ["I", "IV", "V", "I"],
                                ["vi", "ii", "V", "I"],
@@ -261,10 +269,10 @@ if  __name__ == "__main__":
                                ["ii", "V", "I"],
                                ["I", "IV", "ii", "V", "I"]]
     else:
-        newKeys = ['C']
+        keysNew = ['C']
         scaleDegreeProgress = [["I", "IV", "V", "iii", "vi", "ii", "V", "I"]]
 
-    for k in newKeys:
+    for k in keysNew:
         print("======================= {} ==============================".format(k))
         for scales in scaleDegreeProgress:
             jsDat = loadMusicXml(k, xmlFile, jsFile)
