@@ -176,13 +176,13 @@ def outputMusicScore(s):
         debugShow(p)
     #s.show('text')
 
-def chordAttribChange(measure, scale, keyNew):
+def chordAttribChange(measure, scaleTo, keyNew):
     if len(measure.notes) == 0:
         return
-    chordFrom = chord.Chord(measure.notes)
-    chordTo = roman.RomanNumeral(scale, keyNew)
-    if chordFrom.isMajorTriad() and chordTo.isMajorTriad():
-        return
+    chordTo = roman.RomanNumeral(scaleTo, keyNew)
+    scaleFrom = chordTo.romanNumeralAlone.upper()
+    chordFrom = roman.RomanNumeral(scaleFrom, keyNew)
+
     thirdNameFrom = chordFrom.third.name
     thirdNameTo = chordTo.third.name
     if chordFrom.isMajorTriad() and chordTo.isMinorTriad():
@@ -245,7 +245,7 @@ def scoreProcess(scaleDegreeProgress, keyNew, jsDat, s):
         if measureFrom is None:
             measureFrom = [tm, bm]
         measureTo = [tm, bm]
-        for f, t in measureFrom, measureTo:
+        for f, t in zip(measureFrom, measureTo):
             measureTranspose(f, t)
             chordAttribChange(t, scaleTo, keyNew)
         measureAppend(s, measureTo)
@@ -257,8 +257,8 @@ def scoreProcess(scaleDegreeProgress, keyNew, jsDat, s):
 
 
 if  __name__ == "__main__":
-    xmlFile = '../musiclib/piano/rythmic_05.mxl'
-    jsFile = '../musiclib/piano/rythmic_05.json'
+    xmlFile = '../musiclib/piano/rythmic_06.mxl'
+    jsFile = '../musiclib/piano/rythmic_06.json'
     debug = True
     if not debug:
         keysNew = scalesMap.keys()
