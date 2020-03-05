@@ -51,7 +51,6 @@ def triadToTriad(fromChord, toChord):
             for i in triadIntervals:
                 tn = n.transpose(i)
                 if tn.name in toChord.pitchNames and tn.name not in chordMap.values():
-                    print(n.pitch.nameWithOctave, tn.pitch.nameWithOctave)
                     chordMap[n.name] = tn.name
                     break
         # step 2: fix missed notes
@@ -68,6 +67,7 @@ def triadToSeventh(fromChord, toChord):
 
 def seventhToSeventh(fromChord, toChord):
     seventhIntervals = ['m-3', 'M-2', 'm-2', 'P1', 'm2', 'a1', 'M2', 'm3']
+    seventhIntervals = ['M-2', 'm-2', 'P1', 'm2', 'a1', 'M2']
     chordMap = {}
     for n in fromChord.notes:
         # step 1: the closest move
@@ -75,12 +75,12 @@ def seventhToSeventh(fromChord, toChord):
             for i in seventhIntervals:
                 tn = n.transpose(i)
                 if tn.name in toChord.pitchNames and tn.name not in chordMap.values():
-                    print(n.pitch.nameWithOctave, tn.pitch.nameWithOctave)
+                    #print(n.pitch.nameWithOctave, tn.pitch.nameWithOctave)
                     chordMap[n.name] = tn.name
                     break
         # step 2: fix missed notes
         if n.name not in chordMap:
-            #print("missed note: {}".format(n.name))
+            print("missed note: {}".format(n.name))
             diff = set.difference(set(toChord.pitchNames), set(chordMap.values()))
             if len(diff) == 1:
                 chordMap[n.name] = diff.pop()
@@ -90,14 +90,7 @@ def seventhToSeventh(fromChord, toChord):
 def seventhToTriad(fromChord, toChord):
     pass
 
-def chordsConnect():
-    mode = 'C4'
-    ts1 = ['I', 'V', 'vi', 'iii', 'ii', 'V', 'I']
-    ts2 = ['I7', 'V7', 'vi7', 'iii7', 'ii7', 'V7', 'I7']
-    ts3 = ['I', 'IV', 'V7', 'I']
-    ts4 = ['I7', 'IV7', 'V7', 'I7']
-    scaleList = ts1
-
+def chordsConnect(mode, scaleList, chordMapList):
     fromRN = None
     fromScale = None
     toRN = None
@@ -110,6 +103,8 @@ def chordsConnect():
             continue
         toRN = roman.RomanNumeral(scale, mode)
         toScale = scale
+
+        print("fromScale: {}, toScale: {}".format(fromScale, toScale))
         if fromRN.isTriad() and toRN.isTriad():
             chordMap = triadToTriad(fromRN, toRN)
         elif fromRN.isSeventh() and toRN.isSeventh():
@@ -119,14 +114,109 @@ def chordsConnect():
             print("{} ==> {}".format(fromScale, toScale))
             break
 
-        print("====| {} --> {}".format(fromScale, toScale))
-        keys = list(chordMap.keys())
-        keys.reverse()
-        for k in keys:
-            print("Map: {} ==> {}".format(k, chordMap.get(k)))
         fromRN = toRN
         fromScale = scale
+        chordMapList.append(chordMap)
+
+def showText(sheetList, fromNote, toNote):
+    noteList = [['G#', 'A-'], 'A', ['A#', 'B-'], ['B', 'C-'], ['B#', 'C'], ['C#', 'D-'],
+                'D', ['D#', 'E-'], ['E', 'F-'], ['E#', 'F'], ['F#', 'G-'], 'G']
+    noteLen = len(noteList)
+    up = "↑"
+    down = "↓"
+
+    for i in range(noteLen):
+        if noteList[i] == fromNote:
+            fromIndex = i
+            break
+        if type(noteList[i]) == list:
+            if fromNote in noteList[i]:
+                fromIndex = i
+                break
+
+    for i in range(noteLen):
+        if noteList[i] == toNote:
+            toIndex = i
+            break
+        if type(noteList[i]) == list:
+            if toNote in noteList[i]:
+                toIndex = i
+                break
+
+    if fromNote == toNote:
+        #print("{} = {}".format(fromNote, toNote))
+        sheetList.extend(['=', toNote])
+        return
+
+    fidx = fromIndex
+    tidx = toIndex
+    for i in range(1, noteLen + 1):
+        fidx  = (fidx + 1) % noteLen
+        tidx  = (tidx + 1) % noteLen
+        if fidx == toIndex:
+            #print("{} {} {}".format(fromNote, up, toNote))
+            sheetList.extend([up, toNote])
+            break
+        elif tidx == fromIndex:
+            #print("{} {} {}".format(fromNote, down, toNote))
+            sheetList.extend([down, toNote])
+            break
+
+def sheetMusic(sheetList, fromChord, chordMapList):
+    i = 0
+    for c in fromChord:
+        sheetList[i].append(c)
+        i = i + 1
+
+    for m in chordMapList:
+        toChord = []
+        for n in fromChord:
+            toChord.append(m[n])
+        i = 0
+        for f,t in zip(fromChord, toChord):
+            print("fromNote: {}, toNote: {}".format(f, t))
+            l = sheetList[i]
+            showText(l, f, t)
+            i = i + 1
+        fromChord = toChord
+
+def outputSheet(sheetList):
+    print("Final map:")
+    print("===========")
+    for l in sheetList:
+        s = ""
+        for i in l:
+            s = s + "{:3}".format(i)
+        print(s)
+
+
+def demo02():
+    ts1 = ['I', 'V', 'vi', 'iii', 'ii', 'V', 'I']
+    ts2 = ['I7', 'V7', 'vi7', 'iii7', 'ii7', 'V7', 'I7']
+    ts3 = ['I', 'IV', 'V7', 'I']
+    ts4 = ['I7', 'IV7', 'V7', 'I7']
+    modeList = ['C', 'C#', 'D-', 'D', 'E-', 'E', 'F',
+                'F#', 'G-', 'G', 'A-', 'A', 'B-', 'B']
+    modeList = ['C']
+
+    ts = ts2
+    inv = 0
+    sheetLen = 5
+
+    for m in modeList:
+        chordMapList = []
+        sheetList = [[]] * sheetLen
+        for i in range(sheetLen):
+            sheetList[i] = []
+        print("Mode: {}".format(m))
+        chordsConnect(m, ts, chordMapList)
+        rf = roman.RomanNumeral(ts[0], m)
+        rf.inversion(inv)
+        fromChord = rf.pitchNames
+        fromChord.reverse()
+        sheetMusic(sheetList, fromChord, chordMapList)
+        outputSheet(sheetList)
 
 
 if  __name__ == "__main__":
-    chordsConnect()
+    demo02()
