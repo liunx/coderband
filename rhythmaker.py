@@ -2,6 +2,7 @@
 
 from music21 import *
 from pprint import PrettyPrinter
+from collections import OrderedDict
 
 environment.set('musicxmlPath', '/usr/bin/musescore')
 
@@ -193,7 +194,7 @@ def createSheet(sheetList, fromNote, toNote):
 
     if fromNote == toNote:
         #print("{} = {}".format(fromNote, toNote))
-        sheetList.extend(['=', toNote])
+        sheetList.append([fromNote, 0, toNote])
         return
 
     fidx = fromIndex
@@ -203,11 +204,11 @@ def createSheet(sheetList, fromNote, toNote):
         tidx  = (tidx + 1) % noteLen
         if fidx == toIndex:
             #print("{} {} {}".format(fromNote, up, toNote))
-            sheetList.extend([up, toNote])
+            sheetList.append([fromNote, i, toNote])
             break
         elif tidx == fromIndex:
             #print("{} {} {}".format(fromNote, down, toNote))
-            sheetList.extend([down, toNote])
+            sheetList.append([fromNote, -i, toNote])
             break
 
 def findClosetNote(fromNote, toNoteList):
@@ -270,11 +271,6 @@ def flatList(fromList, toList):
 
 
 def sheetMusic(sheetList, fromChord, chordMapList):
-    i = 0
-    for c in fromChord:
-        sheetList[i].append(c)
-        i = i + 1
-
     for m in chordMapList:
         toChord = []
         print("fromChord: {}, chordMap: {}".format(fromChord, m.keys()))
@@ -298,11 +294,37 @@ def sheetMusic(sheetList, fromChord, chordMapList):
 def outputSheet(sheetList):
     print("Final map:")
     print("===========")
+    print(sheetList)
     for l in sheetList:
         s = ""
         for i in l:
             s = s + "{:3}".format(str(i))
         print(s)
+
+
+def findNoteList(n, roll):
+    for l in roll:
+        if l[0] == n:
+            return l
+    return []
+
+
+def createNoteRoll():
+    pass
+
+
+def pianoRoll():
+    roll = []
+    noteArray = [[['G', 0, 'G'], ['G', 2, 'A'], ['A', -2, 'G'], ['G', -2, 'F'], ['F', 2, 'G'], ['G', 0, 'G']],
+                 [['E', -2, 'D'], ['D', 2, 'E'], ['E', 0, 'E'], ['E', -2, 'D'], ['D', 0, 'D'], ['D', 2, 'E']],
+                 [['C', -1, 'B'], ['B', 1, 'C'], ['C', -1, 'B'], ['B', -2, 'A'], ['A', 2, 'B'], ['B', 1, 'C']]]
+    for noteList in noteArray:
+        step = 0
+        listLen = len(noteList)
+        for l in noteList:
+            ll = findNoteList(l[0], roll)
+            if not bool(ll):
+                pass
 
 
 def demo02():
@@ -317,7 +339,7 @@ def demo02():
     ts4 = [['I', 'V7'], ['I', 'ii7'], ['I', 'iii7'], ['I', 'IV7']]
     ts5 = [['V7', 'I'], ['IV7', 'I'], ['I7', 'V']]
 
-    testList = [ts3]
+    testList = [ts1]
     inv = 0
     sheetLen = 5
 
@@ -340,3 +362,4 @@ def demo02():
 
 if  __name__ == "__main__":
     demo02()
+    #pianoRoll()
