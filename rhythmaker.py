@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 
 from music21 import *
+from pprint import PrettyPrinter
 
 environment.set('musicxmlPath', '/usr/bin/musescore')
+
+pp = PrettyPrinter()
+noteList = [['G#', 'A-'], 'A', ['A#', 'B-'], ['B', 'C-'], ['B#', 'C'], ['C#', 'D-'],
+            'D', ['D#', 'E-'], ['E', 'F-'], ['E#', 'F'], ['F#', 'G-'], 'G']
+noteLen = len(noteList)
+up = "↑"
+down = "↓"
+
 
 class Rhythmic:
     def __init__(self, mode, ts):
@@ -83,14 +92,12 @@ def triadToSeventh(fromChord, toChord):
     diff = set.difference(set(toChord.pitchNames), set(chordMap.values()))
     if len(diff) == 1:
         n = diff.pop()
-        if n == toChord.root().name:
-            print("Warning!!! Missed root note: {}".format(n))
-        elif n == toChord.seventh.name:
-            print("Warning!!! Missed seventh note: {}".format(n))
-        elif n == toChord.fifth.name:
-            print("Warning!!! Missed fifth note: {}".format(n))
-        elif n == toChord.third.name:
-            print("Missed third note: {}, can be ignored!".format(n))
+        tn = findClosetNote(n, chordMap.values())
+        print("Add missed note {} to {}".format(n, tn))
+        for k in chordMap.keys():
+            if chordMap[k] == tn:
+                chordMap[k] = [tn, n]
+                break
     return chordMap
 
 
@@ -119,20 +126,18 @@ def seventhToTriad(fromChord, toChord):
     seventhIntervals = ['M-2', 'm-2', 'P1', 'm2', 'a1', 'M2']
     chordMap = {}
     for n in fromChord.notes:
+        if n == fromChord.seventh:
+            continue
         # step 1: the closest move
         if n.name not in chordMap:
             for i in seventhIntervals:
                 tn = n.transpose(i)
                 if tn.name in toChord.pitchNames and tn.name not in chordMap.values():
-                    #print(n.pitch.nameWithOctave, tn.pitch.nameWithOctave)
                     chordMap[n.name] = tn.name
                     break
         # step 2: fix missed notes
         if n.name not in chordMap:
             print("missed note: {}".format(n.name))
-            diff = set.difference(set(toChord.pitchNames), set(chordMap.values()))
-            if len(diff) == 1:
-                chordMap[n.name] = diff.pop()
     return chordMap
 
 
@@ -168,30 +173,23 @@ def chordsConnect(mode, scaleList, chordMapList):
         fromScale = scale
         chordMapList.append(chordMap)
 
-def showText(sheetList, fromNote, toNote):
-    noteList = [['G#', 'A-'], 'A', ['A#', 'B-'], ['B', 'C-'], ['B#', 'C'], ['C#', 'D-'],
-                'D', ['D#', 'E-'], ['E', 'F-'], ['E#', 'F'], ['F#', 'G-'], 'G']
-    noteLen = len(noteList)
-    up = "↑"
-    down = "↓"
 
+def createSheet(sheetList, fromNote, toNote):
     for i in range(noteLen):
-        if noteList[i] == fromNote:
+        s1 = set(fromNote)
+        s2 = set(noteList[i])
+        inter = set.intersection(s1, s2)
+        if bool(inter):
             fromIndex = i
             break
-        if type(noteList[i]) == list:
-            if fromNote in noteList[i]:
-                fromIndex = i
-                break
 
     for i in range(noteLen):
-        if noteList[i] == toNote:
+        s1 = set(toNote)
+        s2 = set(noteList[i])
+        inter = set.intersection(s1, s2)
+        if bool(inter):
             toIndex = i
             break
-        if type(noteList[i]) == list:
-            if toNote in noteList[i]:
-                toIndex = i
-                break
 
     if fromNote == toNote:
         #print("{} = {}".format(fromNote, toNote))
@@ -212,6 +210,65 @@ def showText(sheetList, fromNote, toNote):
             sheetList.extend([down, toNote])
             break
 
+def findClosetNote(fromNote, toNoteList):
+    for i in range(noteLen):
+        s1 = set(fromNote)
+        s2 = set(noteList[i])
+        inter = set.intersection(s1, s2)
+        if bool(inter):
+            fromIndex = i
+            break
+    # look up
+    idx = fromIndex
+    upNote = None
+    upDist = 0
+    for i in range(1, noteLen + 1):
+        idx  = (idx + 1) % noteLen
+        elem = noteList[idx]
+        if type(elem) == list:
+            diff = set.intersection(set(elem), set(toNoteList))
+            if len(diff) > 0:
+                upNote = diff.pop()
+                upDist = i
+                break
+        if elem in toNoteList:
+            upNote = elem
+            upDist = i
+            break
+    # look down
+    idx = fromIndex
+    downNote = None
+    downDist = 0
+    for i in range(1, noteLen + 1):
+        idx  = idx - 1
+        elem = noteList[idx]
+        if type(elem) == list:
+            diff = set.intersection(set(elem), set(toNoteList))
+            if len(diff) > 0:
+                downNote = diff.pop()
+                downDist = i
+                break
+        if elem in toNoteList:
+            downNote = elem
+            downDist = i
+            break
+    # compare
+    if upDist < downDist:
+        print("The Cloest note {}, semitone {}".format(upNote, upDist))
+        return upNote
+    else:
+        print("The Cloest note {}, semitone {}".format(downNote, downDist))
+        return downNote
+
+
+def flatList(fromList, toList):
+    for i in fromList:
+        if type(i) == list:
+            flatList(i, toList)
+        else:
+            toList.append(i)
+
+
 def sheetMusic(sheetList, fromChord, chordMapList):
     i = 0
     for c in fromChord:
@@ -220,15 +277,23 @@ def sheetMusic(sheetList, fromChord, chordMapList):
 
     for m in chordMapList:
         toChord = []
-        for n in fromChord:
-            toChord.append(m[n])
+        print("fromChord: {}, chordMap: {}".format(fromChord, m.keys()))
+        newChord = []
+        flatList(fromChord, newChord)
+        diff = set.difference(set(newChord), set(m.keys()))
+        if bool(diff):
+            newChord.remove(diff.pop())
+        for n in newChord:
+            val= m.get(n)
+            toChord.append(val)
         i = 0
-        for f,t in zip(fromChord, toChord):
-            print("fromNote: {}, toNote: {}".format(f, t))
+        for f,t in zip(newChord, toChord):
+            #print("fromNote: {}, toNote: {}".format(f, t))
             l = sheetList[i]
-            showText(l, f, t)
+            createSheet(l, f, t)
             i = i + 1
         fromChord = toChord
+
 
 def outputSheet(sheetList):
     print("Final map:")
@@ -236,36 +301,41 @@ def outputSheet(sheetList):
     for l in sheetList:
         s = ""
         for i in l:
-            s = s + "{:3}".format(i)
+            s = s + "{:3}".format(str(i))
         print(s)
 
 
 def demo02():
     ts1 = ['I', 'V', 'vi', 'iii', 'ii', 'V', 'I']
     ts2 = ['I7', 'V7', 'vi7', 'iii7', 'ii7', 'V7', 'I7']
-    ts3 = ['I', 'IV7', 'V', 'I']
-    ts4 = ['I7', 'IV7', 'V7', 'I7']
+    ts3 = ['I', 'IV7', 'V7', 'I']
+
     modeList = ['C', 'C#', 'D-', 'D', 'E-', 'E', 'F',
                 'F#', 'G-', 'G', 'A-', 'A', 'B-', 'B']
     modeList = ['C']
 
-    ts = ts3
+    ts4 = [['I', 'V7'], ['I', 'ii7'], ['I', 'iii7'], ['I', 'IV7']]
+    ts5 = [['V7', 'I'], ['IV7', 'I'], ['I7', 'V']]
+
+    testList = [ts3]
     inv = 0
     sheetLen = 5
 
     for m in modeList:
-        chordMapList = []
-        sheetList = [[]] * sheetLen
-        for i in range(sheetLen):
-            sheetList[i] = []
-        print("Mode: {}".format(m))
-        chordsConnect(m, ts, chordMapList)
-        rf = roman.RomanNumeral(ts[0], m)
-        rf.inversion(inv)
-        fromChord = rf.pitchNames
-        fromChord.reverse()
-        sheetMusic(sheetList, fromChord, chordMapList)
-        outputSheet(sheetList)
+        for ts in testList:
+            chordMapList = []
+            sheetList = [[]] * sheetLen
+            for i in range(sheetLen):
+                sheetList[i] = []
+            print("Mode: {}".format(m))
+            chordsConnect(m, ts, chordMapList)
+            rf = roman.RomanNumeral(ts[0], m)
+            rf.inversion(inv)
+            fromChord = rf.pitchNames
+            fromChord.reverse()
+            pp.pprint(chordMapList)
+            sheetMusic(sheetList, fromChord, chordMapList)
+            outputSheet(sheetList)
 
 
 if  __name__ == "__main__":
