@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from music21 import *
+import music21
 from pprint import PrettyPrinter
 from collections import OrderedDict
 
@@ -309,24 +310,6 @@ def findNoteList(n, roll):
     return []
 
 
-def createNoteRoll():
-    pass
-
-
-def pianoRoll():
-    roll = []
-    noteArray = [[['G', 0, 'G'], ['G', 2, 'A'], ['A', -2, 'G'], ['G', -2, 'F'], ['F', 2, 'G'], ['G', 0, 'G']],
-                 [['E', -2, 'D'], ['D', 2, 'E'], ['E', 0, 'E'], ['E', -2, 'D'], ['D', 0, 'D'], ['D', 2, 'E']],
-                 [['C', -1, 'B'], ['B', 1, 'C'], ['C', -1, 'B'], ['B', -2, 'A'], ['A', 2, 'B'], ['B', 1, 'C']]]
-    for noteList in noteArray:
-        step = 0
-        listLen = len(noteList)
-        for l in noteList:
-            ll = findNoteList(l[0], roll)
-            if not bool(ll):
-                pass
-
-
 def demo02():
     ts1 = ['I', 'V', 'vi', 'iii', 'ii', 'V', 'I']
     ts2 = ['I7', 'V7', 'vi7', 'iii7', 'ii7', 'V7', 'I7']
@@ -360,6 +343,81 @@ def demo02():
             outputSheet(sheetList)
 
 
+def initStaff():
+    staff = {}
+    a0 = music21.note.Note('A0')
+    c8 = music21.note.Note('C8')
+    for i in range(a0.pitch.midi, c8.pitch.midi + 1):
+        staff[i] = []
+    return staff
+
+
+def writeStaff(staff, chords):
+    step = 0
+    for notes in chords:
+        for n in notes:
+            nt = music21.note.Note(n)
+            nt.offset = step
+            staff[nt.pitch.midi].append(nt)
+        step = step + 1
+    staff['step'] = step
+
+
+def showStaff(staff):
+    a0 = music21.note.Note('A0')
+    c8 = music21.note.Note('C8')
+    staffStep = staff.pop('step')
+    i = a0.pitch.midi
+    for i in range(a0.pitch.midi, c8.pitch.midi + 1):
+        if bool(staff[i]):
+            break
+        staff.pop(i)
+
+    for i in range(c8.pitch.midi, a0.pitch.midi - 1, -1):
+        if bool(staff[i]):
+            break
+        staff.pop(i)
+
+    keys = list(staff.keys())
+    keys.sort()
+    keys.reverse()
+    print("The sheet:")
+    print("_{}_".format("____" * staffStep))
+    odd = 0
+    for k in keys:
+        notes = staff[k]
+        if not bool(notes):
+            continue
+        s = "|"
+        for step in range(staffStep):
+            flag = False
+            for n in notes:
+                if n.offset == step:
+                    if odd % 2:
+                        s = s + "{:-^4}".format(n.pitch.nameWithOctave)
+                    else:
+                        s = s + "{:^4}".format(n.pitch.nameWithOctave)
+                    flag = True
+            if not flag:
+                if odd %2:
+                    s = s + "----"
+                else:
+                    s = s + "    "
+        s = s + "|"
+        odd = odd + 1
+        print(s)
+    print("|{}|".format("____" * staffStep))
+
+
+def demo03():
+    chords = [['C4', 'E4', 'G4'], ['C4', 'F4', 'A4'], ['B3', 'F4', 'G4'],
+              ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'F4', 'A4'],
+              ['C4', 'E4', 'G4'], ['C4', 'E4', 'G4'], ['C4', 'F4', 'A4'],
+              ['B3', 'F4', 'G4'], ['C4', 'E4', 'G4']]
+    staff = initStaff()
+    writeStaff(staff, chords)
+    showStaff(staff)
+
+
 if  __name__ == "__main__":
-    demo02()
-    #pianoRoll()
+    demo03()
