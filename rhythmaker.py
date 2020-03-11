@@ -44,19 +44,6 @@ def demo():
     rhym.show()
 
 
-def demo02():
-    ts1 = ['I', 'V', 'vi', 'iii', 'ii', 'V', 'I']
-    ts2 = ['I7', 'V7', 'vi7', 'iii7', 'ii7', 'V7', 'I7']
-    ts3 = ['I', 'IV', 'V7', 'I']
-
-    modeList = ['C', 'C#', 'D-', 'D', 'E-', 'E', 'F',
-                'F#', 'G-', 'G', 'A-', 'A', 'B-', 'B']
-    modeList = ['C']
-
-    ts4 = [['I', 'V7'], ['I', 'ii7'], ['I', 'iii7'], ['I', 'IV7']]
-    ts5 = [['V7', 'I'], ['IV7', 'I'], ['I7', 'V']]
-
-
 class Staff:
     def __init__(self):
         self.staffInited = {}
@@ -123,6 +110,7 @@ class Staff:
 class Harmony:
     def __init__(self, mode):
         self.__mode = mode
+        self.__chordList = []
         self.chordIntervals = ['M-2', 'm-2', 'P1', 'm2', 'a1', 'M2']
 
     def mode(self, mode=None):
@@ -130,28 +118,6 @@ class Harmony:
             self.__mode = mode
         else:
             return self.__mode
-
-    def flatList(self, fromList, toList):
-        for i in fromList:
-            if type(i) == list:
-                self.flatList(i, toList)
-            else:
-                toList.append(i)
-
-    def interval(self, fromName, toName):
-        fromNote = music21.note.Note(fromName)
-        toNote = music21.note.Note(toName)
-        p4 = music21.interval.Interval('P4')
-        up = False
-        intv = music21.interval.Interval(fromNote, toNote)
-        if intv.direction.value < 0:
-            intv = intv.reverse()
-            up = True
-        if intv.semitones > p4.semitones:
-            intv = music21.interval.subtract(['P8', intv])
-        if up:
-            intv = intv.reverse()
-        return intv.name
 
     def triadToTriad(self, fromChord, toChord):
         chordMap = {}
@@ -168,63 +134,72 @@ class Harmony:
             # step 2: fix missed notes
             if n.name not in chordMap:
                 print("!!!Missed note: {}".format(n.name))
-                diff = set.difference(set(toChord.pitchNames), set(transNotes))
-                if len(diff) == 1:
-                    missed = diff.pop()
-                    intv = self.interval(n.name, missed)
-                    chordMap[n.name] = [intv.name, missed]
         return chordMap
-
 
     def triadToSeventh(self, fromChord, toChord):
         chordMap = {}
+        transNotes = []
+        transNoteNames = []
         for n in fromChord.notes:
             # step 1: the closest move
             if n.name not in chordMap:
                 for i in self.chordIntervals:
                     tn = n.transpose(i)
-                    if tn.name in toChord.pitchNames and tn.name not in chordMap.values():
-                        chordMap[n.name] = tn.name
+                    if tn.name in toChord.pitchNames and tn.name not in transNoteNames:
+                        chordMap[n.name] = [i, tn.name]
+                        transNoteNames.append(tn.name)
+                        transNotes.append(tn)
                         break
             # step 2: fix missed notes
             if n.name not in chordMap:
                 print("missed note: {}".format(n.name))
-                diff = set.difference(set(toChord.pitchNames), set(chordMap.values()))
-                if len(diff) == 1:
-                    chordMap[n.name] = diff.pop()
-        # add missed notes
-        diff = set.difference(set(toChord.pitchNames), set(chordMap.values()))
+        # step 3: fix no matched note from seventh
+        diff = set.difference(set(toChord.pitchNames), set(transNoteNames))
         if len(diff) == 1:
-            n = diff.pop()
-            # enlarge the search range
-            #tn = findClosetNote(n, chordMap.values())
-            print("Add missed note {} to {}".format(n, tn))
-            for k in chordMap.keys():
-                if chordMap[k] == tn:
-                    chordMap[k] = [tn, n]
+            missNoteName = diff.pop()
+            missNoteOffset = music21.note.Note(missNoteName).pitch.midi % 12
+            transNoteMidis = [n.pitch.midi for n in transNotes]
+            maxMidi = max(transNoteMidis)
+            for i in range(maxMidi - 12, maxMidi):
+                if i % 12 == missNoteOffset:
+                    missNote = music21.note.Note(i)
                     break
+            print("Add: {}".format(missNote.pitch.nameWithOctave))
         return chordMap
-
 
     def seventhToSeventh(self, fromChord, toChord):
         chordMap = {}
+        transNotes = []
+        transNoteNames = []
         for n in fromChord.notes:
             # step 1: the closest move
             if n.name not in chordMap:
                 for i in self.chordIntervals:
                     tn = n.transpose(i)
-                    if tn.name in toChord.pitchNames and tn.name not in chordMap.values():
-                        #print(n.pitch.nameWithOctave, tn.pitch.nameWithOctave)
-                        chordMap[n.name] = tn.name
+                    if tn.name in toChord.pitchNames and tn.name not in transNoteNames:
+                        chordMap[n.name] = [i, tn.name]
+                        transNoteNames.append(tn.name)
+                        transNotes.append(tn)
                         break
             # step 2: fix missed notes
             if n.name not in chordMap:
-                print("missed note: {}".format(n.name))
-                diff = set.difference(set(toChord.pitchNames), set(chordMap.values()))
+                diff = set.difference(set(toChord.pitchNames), set(transNoteNames))
                 if len(diff) == 1:
-                    chordMap[n.name] = diff.pop()
+                    missNoteName = diff.pop()
+                    missNote = None
+                    missNoteOffset = music21.note.Note(missNoteName).pitch.midi % 12
+                    transNoteMidis = [n.pitch.midi for n in transNotes]
+                    minMidi = min(transNoteMidis)
+                    for i in range(minMidi, minMidi + 12):
+                        if i % 12 == missNoteOffset:
+                            missNote = music21.note.Note(i)
+                            break
+                    if missNote == None:
+                        print("missNote {} is None!".format(missNoteName))
+                        print(transNoteMidis)
+                    i = music21.interval.Interval(n, missNote)
+                    chordMap[n.name] = [i.directedName, missNote.name]
         return chordMap
-
 
     def seventhToTriad(self, fromChord, toChord):
         chordMap = {}
@@ -274,8 +249,8 @@ class Harmony:
         print(self.chordMapList)
 
     def chords(self, startChord):
-        l = []
-        l.append([n.pitch.nameWithOctave for n in startChord.notes])
+        self.__chordList = []
+        self.__chordList.append([n.pitch.nameWithOctave for n in startChord.notes])
         currChord = startChord
         for chordMap in self.chordMapList:
             ll = []
@@ -284,8 +259,8 @@ class Harmony:
                 tn = n.transpose(intv)
                 ll.append(tn.pitch.nameWithOctave)
             currChord = music21.chord.Chord(ll)
-            l.append(ll)
-        return l
+            self.__chordList.append(ll)
+        return self.__chordList
 
 
 def demo03():
@@ -301,16 +276,24 @@ def demo03():
 
 
 def demo04():
-    ts = ['I', 'IV', 'V7', 'I']
-    ts = ['I', 'V', 'vi', 'iii', 'ii', 'V', 'I']
-    h = Harmony('C4')
+    mode = 'C4'
+    ts3 = [['I', 'IV', 'V', 'I'],
+          ['I', 'V', 'vi', 'iii', 'ii', 'V', 'I']]
+    ts7 = [['I7', 'IV7', 'V7', 'I7'],
+          ['ii7', 'V7', 'I7'],
+          ['I7', 'IV7', 'V7'],
+          ['I7', 'V7', 'vi7', 'iii7', 'ii7', 'V7', 'I7']]
+    ts7 = [['I7', 'V7', 'vi7', 'iii7', 'ii7', 'V7', 'I7']]
+    h = Harmony(mode)
     staff = Staff()
-    h.process(ts)
-    #h.debug()
-    cs = music21.chord.Chord('C4 E4 G4')
-    l = h.chords(cs)
-    staff.read(l)
-    staff.show()
+    for i in ts3:
+        h.process(i)
+        h.debug()
+        rf = music21.roman.RomanNumeral(i[0], mode)
+        rf.inversion(1)
+        l = h.chords(rf)
+        staff.read(l)
+        staff.show()
 
 
 if  __name__ == "__main__":
