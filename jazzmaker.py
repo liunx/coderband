@@ -19,15 +19,21 @@ def scaleGenerate(scales):
         for n in currNoteScales:
             v = n.pitch.midi - modeNoteMidi
             scaleVector.append(v)
-        print("{}Vec = {}".format(str.lower(modeNote.step), scaleVector))
+        print("{} = {}".format(str.lower(modeNote.step), scaleVector))
         newNote = modeNote.transpose('P8')
         currNoteScales.pop(0)
         currNoteScales.append(newNote)
 
 
 if  __name__ == "__main__":
-    cScales = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4']
-    cScales1 = ['C4', 'D4', 'Eb4', 'F4', 'G4', 'A4', 'B4']
-    scaleGenerate(cScales)
+    natureScale = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4']
+    melodicScale = ['C4', 'D4', 'Eb4', 'F4', 'G4', 'A4', 'B4']
+    diminishedScale = ['F4', 'G4', 'Ab4', 'A#4', 'B4', 'C#5', 'D5', 'E5']
+    wholeToneScale = ['G4', 'A4', 'B4', 'C#5', 'D#5', 'F5']
+    scaleGenerate(natureScale)
     print("==================")
-    scaleGenerate(cScales1)
+    scaleGenerate(melodicScale)
+    print("==================")
+    scaleGenerate(diminishedScale)
+    print("==================")
+    scaleGenerate(wholeToneScale)
