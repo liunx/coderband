@@ -58,26 +58,30 @@ class Staff:
     def read(self, chords):
         self.staff = copy.deepcopy(self.staffInited)
         step = 0
+        lastMidi = 0
         for notes in chords:
             for n in notes:
+                if n == 'R':
+                    if lastMidi == 0:
+                        continue
+                    nt = music21.note.Rest()
+                    nt.offset = step
+                    self.staff[lastMidi].append(nt)
+                    continue
                 nt = music21.note.Note(n)
                 nt.offset = step
                 if nt.pitch.alter > 0:
-                    self.staff[nt.pitch.midi - 1].append(nt)
+                    lastMidi = nt.pitch.midi - 1
                 elif nt.pitch.alter < 0:
-                    self.staff[nt.pitch.midi + 1].append(nt)
+                    lastMidi = nt.pitch.midi + 1
                 else:
-                    self.staff[nt.pitch.midi].append(nt)
+                    lastMidi = nt.pitch.midi
+                self.staff[lastMidi].append(nt)
             step = step + 1
         self.staff['step'] = step
 
     def show(self, indent=5):
         staffStep = self.staff.pop('step')
-        for k in self.staffInited.keys():
-            if bool(self.staff[k]):
-                break
-            self.staff.pop(k)
-
         keys = list(self.staff.keys())
         keys.sort()
         keys.reverse()
@@ -98,7 +102,10 @@ class Staff:
                             strFormat = "{:-^"  + str(indent) + "}"
                         else:
                             strFormat = "{:^"  + str(indent) + "}"
-                        s = s + strFormat.format(n.pitch.unicodeNameWithOctave)
+                        if n.isRest:
+                            s = s + strFormat.format('@')
+                        else:
+                            s = s + strFormat.format(n.pitch.unicodeNameWithOctave)
                         flag = True
                 if not flag:
                     if odd %2:
