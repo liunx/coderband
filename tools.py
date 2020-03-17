@@ -206,7 +206,7 @@ def tabScales(line, mode, noteNames):
     showTab(tab)
 
 
-if  __name__ == "__main__":
+def demo01():
     mode = 'F'
     line = 1
     noteNames = []
@@ -220,3 +220,53 @@ if  __name__ == "__main__":
     for i in range(1, 7):
         tabScales(i, mode, noteNames)
         break
+
+
+def triadChords(scales):
+    for k,v in scales.items():
+        vectors = [v[0], v[2], v[4]]
+        root = music21.note.Note(k)
+        third = root.transpose(v[2])
+        fifth = root.transpose(v[4])
+        cs = music21.chord.Chord([root, third, fifth])
+        print(k, cs.commonName, [n.name for n in cs.notes], vectors)
+
+
+def seventhChords(scales):
+    for k,v in scales.items():
+        vectors = [v[0], v[2], v[4], v[6]]
+        root = music21.note.Note(k)
+        third = root.transpose(v[2])
+        fifth = root.transpose(v[4])
+        seventh = root.transpose(v[6])
+        cs = music21.chord.Chord([root, third, fifth, seventh])
+        print(k, cs.commonName, [n.name for n in cs.notes], vectors)
+
+
+def ninthChords(scales):
+    for k,v in scales.items():
+        vectors = [v[0], v[1], v[2], v[4], v[6]]
+        root = music21.note.Note(k)
+        ninth = root.transpose(v[1])
+        third = root.transpose(v[2])
+        fifth = root.transpose(v[4])
+        seventh = root.transpose(v[6])
+        cs = music21.chord.Chord([root, third, fifth, seventh, ninth])
+        print(k, cs.commonName, [n.name for n in cs.notes], vectors)
+
+
+def demo02():
+    if False:
+        print("\ntriad chords:\n")
+        triadChords(natureScales)
+        triadChords(melodicScales)
+        print("\nseventh chords:\n")
+        seventhChords(natureScales)
+        seventhChords(melodicScales)
+    print("\nninth chords:\n")
+    ninthChords(natureScales)
+    ninthChords(melodicScales)
+
+
+if  __name__ == "__main__":
+    demo02()
