@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import music21
+import math
 
 
 natureScales = {
@@ -268,5 +269,22 @@ def demo02():
     ninthChords(melodicScales)
 
 
+def drawCircle():
+    width, height = 21, 21
+    a, b = 10, 10
+    r = 10
+    map_ = [[' ' for x in range(width)] for y in range(height)]
+    # draw the circle
+    for angle in range(0, 360, 15):
+        x = r * math.sin(math.radians(angle)) + a
+        y = r * math.cos(math.radians(angle)) + b
+        map_[int(round(y))][int(round(x))] = 'Cb'
+
+    # print the map
+    for line in map_:
+        print(' '.join(line))
+
+
 if  __name__ == "__main__":
-    demo02()
+    #demo02()
+    drawCircle()
