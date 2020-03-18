@@ -69,17 +69,19 @@ def scaleGenerate():
 def fifthCircle():
     firstNote = music21.note.Note('F')
     currNote = firstNote
-    print(firstNote.name)
+    l = [firstNote.pitch.unicodeName]
     while True:
         n = currNote.transpose('P5')
         p = n.pitch.getEnharmonic()
         if firstNote.pitch.name in [n.name, p.name]:
             break
         if n.pitch.alter == 0:
-            print(n.name)
+            l.append(n.pitch.unicodeName)
         else:
-            print("{}/{}".format(n.name, p.name))
+            l.append("{}/{}".format(n.pitch.unicodeName, p.unicodeName))
         currNote = n
+    print("Fifth Circle:")
+    drawCircle(l)
 
 
 def showTab(tab, indent=8):
@@ -269,16 +271,20 @@ def demo02():
     ninthChords(melodicScales)
 
 
-def drawCircle():
-    width, height = 21, 21
-    a, b = 10, 10
-    r = 10
+def drawCircle(l):
+    listLen = len(l)
+    a, b = listLen + 1, listLen + 1
+    width, height = (a + 1) * 2, (b + 1) * 2
+    r = listLen
     map_ = [[' ' for x in range(width)] for y in range(height)]
     # draw the circle
-    for angle in range(0, 360, 15):
+    step = int(360 / listLen)
+    i = 0
+    for angle in range(0, 360, step):
         x = r * math.sin(math.radians(angle)) + a
         y = r * math.cos(math.radians(angle)) + b
-        map_[int(round(y))][int(round(x))] = 'Cb'
+        map_[int(round(y))][int(round(x))] = l[i]
+        i = i + 1
 
     # print the map
     for line in map_:
@@ -286,5 +292,4 @@ def drawCircle():
 
 
 if  __name__ == "__main__":
-    #demo02()
-    drawCircle()
+    fifthCircle()
