@@ -4,7 +4,7 @@ import music21
 import math
 
 
-natureScales = {
+natureModes = {
     'C': [0, 2, 4, 5, 7, 9, 11],
     'D': [0, 2, 3, 5, 7, 9, 10],
     'E': [0, 1, 3, 5, 7, 8, 10],
@@ -14,7 +14,8 @@ natureScales = {
     'B': [0, 1, 3, 5, 6, 8, 10]
 }
 
-melodicScales = {
+
+melodicModes = {
     'C': [0, 2, 3, 5, 7, 9, 11],
     'D': [0, 1, 3, 5, 7, 9, 10],
     'Eb': [0, 2, 4, 6, 8, 9, 11],
@@ -22,7 +23,6 @@ melodicScales = {
     'G': [0, 2, 4, 5, 7, 8, 10],
     'A': [0, 2, 3, 5, 6, 8, 10],
     'B': [0, 1, 3, 4, 6, 8, 10],
-
 }
 
 diminishedScales = {
@@ -31,6 +31,9 @@ diminishedScales = {
 }
 
 wholeToneScales = {'G': [0, 2, 4, 6, 8, 10]}
+
+tuningRatio = [[1, 1], [16, 15], [9, 8], [6, 5], [5, 4], [4, 3],
+               [45, 32], [3, 2], [8, 5], [5, 3], [9, 5], [15, 8]]
 
 
 def scaleVectorCalc(scales):
@@ -215,7 +218,7 @@ def demo01():
     noteNames = []
     firstNote = music21.note.Note(mode)
     noteNames.append(firstNote.pitch.unicodeName)
-    scaleVectors = natureScales[mode]
+    scaleVectors = natureModes[mode]
     for v in scaleVectors[1:]:
         n = firstNote.transpose(v)
         noteNames.append(n.name)
@@ -261,14 +264,14 @@ def ninthChords(scales):
 def demo02():
     if False:
         print("\ntriad chords:\n")
-        triadChords(natureScales)
-        triadChords(melodicScales)
+        triadChords(natureModes)
+        triadChords(melodicModes)
         print("\nseventh chords:\n")
-        seventhChords(natureScales)
-        seventhChords(melodicScales)
+        seventhChords(natureModes)
+        seventhChords(melodicModes)
     print("\nninth chords:\n")
-    ninthChords(natureScales)
-    ninthChords(melodicScales)
+    ninthChords(natureModes)
+    ninthChords(melodicModes)
 
 
 def drawCircle(l):
@@ -291,5 +294,18 @@ def drawCircle(l):
         print(' '.join(line))
 
 
+def findModesByNote(noteName):
+    note = music21.note.Note(noteName)
+    mode = natureModes['C']
+    for i in range(len(mode)):
+        currVect = mode[i]
+        l = []
+        for v in mode:
+            intv = v - currVect
+            n = note.transpose(intv)
+            l.append(n.name)
+        print(l)
+
+
 if  __name__ == "__main__":
-    fifthCircle()
+    findModesByNote('C')
