@@ -4,25 +4,25 @@ import music21
 import math
 
 
-natureModes = {
-    'C': [0, 2, 4, 5, 7, 9, 11],
-    'D': [0, 2, 3, 5, 7, 9, 10],
-    'E': [0, 1, 3, 5, 7, 8, 10],
-    'F': [0, 2, 4, 6, 7, 9, 11],
-    'G': [0, 2, 4, 5, 7, 9, 10],
-    'A': [0, 2, 3, 5, 7, 8, 10],
-    'B': [0, 1, 3, 5, 6, 8, 10]
+diatonics = {
+    'Lydian': [0, 2, 4, 6, 7, 9, 11],
+    'Ionian': [0, 2, 4, 5, 7, 9, 11],
+    'Mixolydian': [0, 2, 4, 5, 7, 9, 10],
+    'Dorian': [0, 2, 3, 5, 7, 9, 10],
+    'Aeolian': [0, 2, 3, 5, 7, 8, 10],
+    'Phrygian': [0, 1, 3, 5, 7, 8, 10],
+    'Locrian': [0, 1, 3, 5, 6, 8, 10]
 }
 
 
-melodicModes = {
-    'C': [0, 2, 3, 5, 7, 9, 11],
-    'D': [0, 1, 3, 5, 7, 9, 10],
+melodicMinors = {
+    'B' : [0, 1, 3, 4, 6, 8, 10],
+    'D' : [0, 1, 3, 5, 7, 9, 10],
+    'A' : [0, 2, 3, 5, 6, 8, 10],
+    'G' : [0, 2, 4, 5, 7, 8, 10],
+    'F' : [0, 2, 4, 6, 7, 9, 10],
     'Eb': [0, 2, 4, 6, 8, 9, 11],
-    'F': [0, 2, 4, 6, 7, 9, 10],
-    'G': [0, 2, 4, 5, 7, 8, 10],
-    'A': [0, 2, 3, 5, 6, 8, 10],
-    'B': [0, 1, 3, 4, 6, 8, 10],
+    'C' : [0, 2, 3, 5, 7, 9, 11]
 }
 
 diminishedScales = {
@@ -125,28 +125,45 @@ def markNotes(l, note, noteNames, pos=False):
     mid = int(len(l) / 2)
     if note.name in noteNames:
         if pos:
-            l[mid] = "[ {} ]".format(note.pitch.unicodeName)
+            l[mid] = "[ {} ]".format(note.pitch.name)
         else:
-            l[mid] = "({})".format(note.pitch.unicodeName)
+            l[mid] = "({})".format(note.pitch.name)
     for i in range(1, mid):
         n = note.transpose(i)
         p = n.pitch.getEnharmonic()
         if n.name in noteNames:
-            l[i + mid] = "({})".format(n.pitch.unicodeName)
+            l[i + mid] = "({})".format(n.pitch.name)
         if p.name in noteNames:
-            l[i + mid] = "({})".format(p.unicodeName)
+            l[i + mid] = "({})".format(p.name)
     for i in range(1, mid + 1):
         n = note.transpose(-i)
         p = n.pitch.getEnharmonic()
         if n.name in noteNames:
-            l[mid - i] = "({})".format(n.pitch.unicodeName)
+            l[mid - i] = "({})".format(n.pitch.name)
         if p.name in noteNames:
-            l[mid - i] = "({})".format(p.unicodeName)
+            l[mid - i] = "({})".format(p.name)
 
 
-def tabNoteNamess(line, noteName, romanNum):
+def markNumbers(l, num, intervals, pos=False):
+    mid = int(len(l) / 2)
+    if num in intervals:
+        if pos:
+            l[mid] = "[ {} ]".format(num)
+        else:
+            l[mid] = "({})".format(num)
+    for i in range(1, mid):
+        n = (num + i) % 12
+        if n in intervals:
+            l[mid + i] = "({})".format(n)
+    for i in range(1, mid + 1):
+        n = abs(12 + num - i) % 12
+        if n in intervals:
+            l[mid - i] = "({})".format(n)
+
+
+def tabChord(line, noteName, romanNum):
     h = 6
-    w = 7
+    w = 9
     tab = {}
     for i in range(1, h + 1):
         tab[i] = [''] * w
@@ -175,11 +192,11 @@ def tabNoteNamess(line, noteName, romanNum):
         tab[i].insert(0, '')
     for i in [3, 4, 5, 6]:
         tab[i].append('')
-    print("TAB {}:".format(rf.figureAndKey))
+    print("\n\nTAB {}:".format(rf.figureAndKey))
     showTab(tab)
 
 
-def tabScales(line, mode, noteNames):
+def tabScale(line, mode, noteNames):
     h = 6
     w = 8
     tab = {}
@@ -212,20 +229,62 @@ def tabScales(line, mode, noteNames):
     showTab(tab)
 
 
+def tabInterval(line, mode, intervals):
+    h = 6
+    w = 10
+    tab = {}
+    for i in range(1, h + 1):
+        tab[i] = [''] * w
+    l = tab[line]
+    print(intervals)
+    markNumbers(l, 0, intervals, pos=True)
+    currNum = 0
+    for i in range(line + 1, h + 1):
+        n = (currNum + 5) % 12
+        l = tab[i]
+        markNumbers(l, n, intervals)
+        currNum = n
+    currNum = 0
+    for i in range(line - 1, 0, -1):
+        n = (currNum + 5) % 12
+        l = tab[i]
+        markNumbers(l, n, intervals)
+        currNum = n
+    for i in [1, 2]:
+        tab[i].insert(0, '')
+    for i in [3, 4, 5, 6]:
+        tab[i].append('')
+    print("TAB {}:".format(mode))
+    showTab(tab)
+
+
 def demo01():
-    mode = 'F'
-    line = 1
+    mode = 'Ionian'
+    key = 'C'
     noteNames = []
-    firstNote = music21.note.Note(mode)
+    firstNote = music21.note.Note(key)
     noteNames.append(firstNote.pitch.unicodeName)
-    scaleVectors = natureModes[mode]
+    scaleVectors = diatonics[mode]
     for v in scaleVectors[1:]:
         n = firstNote.transpose(v)
         noteNames.append(n.name)
-    print(noteNames)
     for i in range(1, 7):
-        tabScales(i, mode, noteNames)
+        tabScale(i, key, noteNames)
         break
+
+
+def demo02():
+    key = 'C'
+    for r in ['I7', 'i7']:
+        for i in range(1, 7):
+            tabChord(i, key, r)
+
+
+def demo03():
+    mode = 'Ionian'
+    mode = 'Lydian'
+    scaleVectors = diatonics[mode]
+    tabInterval(6, mode, scaleVectors)
 
 
 def triadChords(scales):
@@ -261,17 +320,17 @@ def ninthChords(scales):
         print(k, cs.commonName, [n.name for n in cs.notes], vectors)
 
 
-def demo02():
+def demo11():
     if False:
         print("\ntriad chords:\n")
-        triadChords(natureModes)
-        triadChords(melodicModes)
+        triadChords(diatonics)
+        triadChords(melodicMinors)
         print("\nseventh chords:\n")
-        seventhChords(natureModes)
-        seventhChords(melodicModes)
+        seventhChords(diatonics)
+        seventhChords(melodicMinors)
     print("\nninth chords:\n")
-    ninthChords(natureModes)
-    ninthChords(melodicModes)
+    ninthChords(diatonics)
+    ninthChords(melodicMinors)
 
 
 def drawCircle(l):
@@ -296,7 +355,7 @@ def drawCircle(l):
 
 def findModesByNote(noteName):
     note = music21.note.Note(noteName)
-    mode = natureModes['C']
+    mode = diatonics['C']
     for i in range(len(mode)):
         currVect = mode[i]
         l = []
@@ -308,4 +367,4 @@ def findModesByNote(noteName):
 
 
 if  __name__ == "__main__":
-    findModesByNote('C')
+    demo03()
