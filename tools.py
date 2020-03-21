@@ -287,20 +287,20 @@ def demo03():
     tabInterval(6, mode, scaleVectors)
 
 
-def triadChords(scales):
+def triadChords(key, scales):
     for k,v in scales.items():
         vectors = [v[0], v[2], v[4]]
-        root = music21.note.Note(k)
+        root = music21.note.Note(key)
         third = root.transpose(v[2])
         fifth = root.transpose(v[4])
         cs = music21.chord.Chord([root, third, fifth])
         print(k, cs.commonName, [n.name for n in cs.notes], vectors)
 
 
-def seventhChords(scales):
+def seventhChords(key, scales):
     for k,v in scales.items():
         vectors = [v[0], v[2], v[4], v[6]]
-        root = music21.note.Note(k)
+        root = music21.note.Note(key)
         third = root.transpose(v[2])
         fifth = root.transpose(v[4])
         seventh = root.transpose(v[6])
@@ -308,10 +308,10 @@ def seventhChords(scales):
         print(k, cs.commonName, [n.name for n in cs.notes], vectors)
 
 
-def ninthChords(scales):
+def ninthChords(key, scales):
     for k,v in scales.items():
         vectors = [v[0], v[1], v[2], v[4], v[6]]
-        root = music21.note.Note(k)
+        root = music21.note.Note(key)
         ninth = root.transpose(v[1])
         third = root.transpose(v[2])
         fifth = root.transpose(v[4])
@@ -321,16 +321,16 @@ def ninthChords(scales):
 
 
 def demo11():
-    if False:
-        print("\ntriad chords:\n")
-        triadChords(diatonics)
-        triadChords(melodicMinors)
-        print("\nseventh chords:\n")
-        seventhChords(diatonics)
-        seventhChords(melodicMinors)
+    key = 'C'
+    print("\ntriad chords:\n")
+    triadChords(key, diatonics)
+    triadChords(key, melodicMinors)
+    print("\nseventh chords:\n")
+    seventhChords(key, diatonics)
+    seventhChords(key, melodicMinors)
     print("\nninth chords:\n")
-    ninthChords(diatonics)
-    ninthChords(melodicMinors)
+    ninthChords(key, diatonics)
+    ninthChords(key, melodicMinors)
 
 
 def drawCircle(l):
@@ -366,5 +366,45 @@ def findModesByNote(noteName):
         print(l)
 
 
+triadChordTable = {
+    "Maj": [0, 4, 7],
+    "Min": [0, 3, 7],
+    "Dim": [0, 3, 6],
+    "Aug": [0, 4, 4]
+}
+
+seventhChordTable = {
+    "Δ": [0, 4, 7, 11],
+    "-Δ": [0, 3, 7, 11],
+    "-Δ/G": [0, 4,  7, 8, 10],
+    "7": [0, 4, 7, 10],
+    "-": [0, 3, 7, 10],
+    "φ": [0, 3, 6, 10],
+    "°": [0, 3, 6, 9]
+}
+
+extensionChordTable = {
+    "Δ♯4": [0, 4, 6, 7, 11],
+    "Δ♯5": [0, 4, 8, 11],
+    "7♯5": [0, 4, 8, 10],
+    "7♯11": [0, 4, 6, 7, 10],
+    "φ♯2": [0, 2, 3, 6, 10],
+    "-♭6": [0, 3, 7, 8, 10],
+    "7alt": [0, 1, 3, 4, 6, 8, 10],
+}
+
+suspendChordTable = {
+    "sus": [0, 4, 5, 7, 10],
+    "sus♭9": [0, 1, 7, 10],
+}
+
+"""
+Δφ♭♯°
+"""
+
+def chord_demo():
+    demo11()
+
+
 if  __name__ == "__main__":
-    demo03()
+    chord_demo()
