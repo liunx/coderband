@@ -2,9 +2,11 @@
 
 import music21
 import math
+import numpy as np
+import pprint
 
 
-diatonics = {
+diatonicsMap = {
     'Lydian': [0, 2, 4, 6, 7, 9, 11],
     'Ionian': [0, 2, 4, 5, 7, 9, 11],
     'Mixolydian': [0, 2, 4, 5, 7, 9, 10],
@@ -25,12 +27,12 @@ melodicMinors = {
     'C' : [0, 2, 3, 5, 7, 9, 11]
 }
 
-diminishedScales = {
+diminishedScalesMap = {
     'F': [0, 2, 3, 5, 6, 8, 9, 11],
     'G': [0, 1, 3, 4, 6, 7, 9, 10]
 }
 
-wholeToneScales = {'G': [0, 2, 4, 6, 8, 10]}
+wholeToneScalesMap = {'G': [0, 2, 4, 6, 8, 10]}
 
 tuningRatio = [[1, 1], [16, 15], [9, 8], [6, 5], [5, 4], [4, 3],
                [45, 32], [3, 2], [8, 5], [5, 3], [9, 5], [15, 8]]
@@ -70,19 +72,9 @@ def scaleGenerate():
     scaleVectorCalc(wholeToneScale)
 
 def fifthCircle():
-    firstNote = music21.note.Note('F')
-    currNote = firstNote
-    l = [firstNote.pitch.unicodeName]
-    while True:
-        n = currNote.transpose('P5')
-        p = n.pitch.getEnharmonic()
-        if firstNote.pitch.name in [n.name, p.name]:
-            break
-        if n.pitch.alter == 0:
-            l.append(n.pitch.unicodeName)
-        else:
-            l.append("{}/{}".format(n.pitch.unicodeName, p.unicodeName))
-        currNote = n
+    l = ['F', 'C', 'G', 'D', 'A', 'E', 'B/C♭', 'F♯/G♭', 'C♯/D♭', 'A♭', 'E♭', 'B♭']
+    l.reverse()
+    l = rotate(5, l)
     print("Fifth Circle:")
     drawCircle(l)
 
@@ -264,7 +256,7 @@ def demo01():
     noteNames = []
     firstNote = music21.note.Note(key)
     noteNames.append(firstNote.pitch.unicodeName)
-    scaleVectors = diatonics[mode]
+    scaleVectors = diatonicsMap[mode]
     for v in scaleVectors[1:]:
         n = firstNote.transpose(v)
         noteNames.append(n.name)
@@ -283,7 +275,7 @@ def demo02():
 def demo03():
     mode = 'Ionian'
     mode = 'Lydian'
-    scaleVectors = diatonics[mode]
+    scaleVectors = diatonicsMap[mode]
     tabInterval(6, mode, scaleVectors)
 
 
@@ -323,13 +315,13 @@ def ninthChords(key, scales):
 def demo11():
     key = 'C'
     print("\ntriad chords:\n")
-    triadChords(key, diatonics)
+    triadChords(key, diatonicsMap)
     triadChords(key, melodicMinors)
     print("\nseventh chords:\n")
-    seventhChords(key, diatonics)
+    seventhChords(key, diatonicsMap)
     seventhChords(key, melodicMinors)
     print("\nninth chords:\n")
-    ninthChords(key, diatonics)
+    ninthChords(key, diatonicsMap)
     ninthChords(key, melodicMinors)
 
 
@@ -355,7 +347,7 @@ def drawCircle(l):
 
 def findModesByNote(noteName):
     note = music21.note.Note(noteName)
-    mode = diatonics['C']
+    mode = diatonicsMap['C']
     for i in range(len(mode)):
         currVect = mode[i]
         l = []
@@ -366,44 +358,257 @@ def findModesByNote(noteName):
         print(l)
 
 
-triadChordTable = {
-    "Maj": [0, 4, 7],
-    "Min": [0, 3, 7],
-    "Dim": [0, 3, 6],
-    "Aug": [0, 4, 4]
-}
+"""
+Δ φ ♭ ♯ ♮ °
+"""
 
-seventhChordTable = {
-    "Δ": [0, 4, 7, 11],
-    "-Δ": [0, 3, 7, 11],
-    "-Δ/G": [0, 4,  7, 8, 10],
-    "7": [0, 4, 7, 10],
-    "-": [0, 3, 7, 10],
-    "φ": [0, 3, 6, 10],
-    "°": [0, 3, 6, 9]
-}
 
-extensionChordTable = {
-    "Δ♯4": [0, 4, 6, 7, 11],
-    "Δ♯5": [0, 4, 8, 11],
-    "7♯5": [0, 4, 8, 10],
-    "7♯11": [0, 4, 6, 7, 10],
-    "φ♯2": [0, 2, 3, 6, 10],
-    "-♭6": [0, 3, 7, 8, 10],
-    "7alt": [0, 1, 3, 4, 6, 8, 10],
-}
+# | common name | suffixes | scale vector | mode indexes |
+chordQueryTable = [
+    ['major triad', [''], [0, 4, 7], []],
+    ['minor triad', ['m'], [0, 3, 7], []],
+    ['NAME', ['dim'], [0, 3, 6], []],
+    ['NAME', ['aug'], [0, 4, 8], []],
+    ['NAME', ['Δ'], [0, 4, 7, 11], []],
+    ['NAME', ['-Δ'], [0, 3, 7, 11], []],
+    ['NAME', ['7'], [0, 4, 7, 10], []],
+    ['NAME', ['-'], [0, 3, 7, 10], []],
+    ['NAME', ['φ'], [0, 3, 6, 10], []],
+    ['NAME', ['°'], [0, 3, 6, 9], []],
+    ['NAME', ['Δ♯4'], [0, 4, 6, 7, 11], []],
+    ['NAME', ['Δ♯5'], [0, 4, 8, 11], []],
+    ['NAME', ['7♯5'], [0, 4, 8, 10], []],
+    ['NAME', ['7♯11'], [0, 4, 6, 7, 10], []],
+    ['NAME', ['φ♯2'], [0, 2, 3, 6, 10], []],
+    ['NAME', ['-♭6'], [0, 3, 7, 8, 10], []],
+    ['NAME', ['7alt'], [0, 1, 3, 4, 6, 8, 10], []],
+    ['NAME', ['sus'], [0, 4, 5, 7, 10], []],
+    ['NAME', ['sus♭9'], [0, 1, 7, 10], []]
+]
 
-suspendChordTable = {
-    "sus": [0, 4, 5, 7, 10],
-    "sus♭9": [0, 1, 7, 10],
-}
+
+# | name | scale vectors |
+modeTable = [['Lydian', [0, 2, 4, 6, 7, 9, 11]],
+             ['Ionian', [0, 2, 4, 5, 7, 9, 11]],
+             ['Mixolydian', [0, 2, 4, 5, 7, 9, 10]],
+             ['Dorian', [0, 2, 3, 5, 7, 9, 10]],
+             ['Aeolian', [0, 2, 3, 5, 7, 8, 10]],
+             ['Phrygian', [0, 1, 3, 5, 7, 8, 10]],
+             ['Locrian', [0, 1, 3, 5, 6, 8, 10]],
+             ['melodicMinorB', [0, 1, 3, 4, 6, 8, 10]],
+             ['melodicMinorD', [0, 1, 3, 5, 7, 9, 10]],
+             ['melodicMinorA', [0, 2, 3, 5, 6, 8, 10]],
+             ['melodicMinorG', [0, 2, 4, 5, 7, 8, 10]],
+             ['melodicMinorF', [0, 2, 4, 6, 7, 9, 10]],
+             ['melodicMinorEb', [0, 2, 4, 6, 8, 9, 11]],
+             ['melodicMinorC', [0, 2, 3, 5, 7, 9, 11]],
+             ['diminishedF', [0, 2, 3, 5, 6, 8, 9, 11]],
+             ['diminishedG', [0, 1, 3, 4, 6, 7, 9, 10]],
+             ['wholeToneG', [0, 2, 4, 6, 8, 10]]]
+
 
 """
-Δφ♭♯°
+Auto generated
 """
+chordQueryTable = [
+    ['major triad', [''], [0, 4, 7], [0, 1, 2, 10, 11, 15]],
+    ['minor triad', ['m'], [0, 3, 7], [3, 4, 5, 8, 13, 15]],
+    ['NAME', ['dim'], [0, 3, 6], [6, 7, 9, 14, 15]],
+    ['NAME', ['aug'], [0, 4, 8], [7, 10, 12, 16]],
+    ['NAME', ['Δ'], [0, 4, 7, 11], [0, 1]],
+    ['NAME', ['-Δ'], [0, 3, 7, 11], [13]],
+    ['NAME', ['7'], [0, 4, 7, 10], [2, 10, 11, 15]],
+    ['NAME', ['-'], [0, 3, 7, 10], [3, 4, 5, 8, 15]],
+    ['NAME', ['φ'], [0, 3, 6, 10], [6, 7, 9, 15]],
+    ['NAME', ['°'], [0, 3, 6, 9], [14, 15]],
+    ['NAME', ['Δ♯4'], [0, 4, 6, 7, 11], [0]],
+    ['NAME', ['Δ♯5'], [0, 4, 8, 11], [12]],
+    ['NAME', ['7♯5'], [0, 4, 8, 10], [7, 10, 16]],
+    ['NAME', ['7♯11'], [0, 4, 6, 7, 10], [11, 15]],
+    ['NAME', ['φ♯2'], [0, 2, 3, 6, 10], [9]],
+    ['NAME', ['-♭6'], [0, 3, 7, 8, 10], [4, 5]],
+    ['NAME', ['7alt'], [0, 1, 3, 4, 6, 8, 10], [7]],
+    ['NAME', ['sus'], [0, 4, 5, 7, 10], [2, 10]],
+    ['NAME', ['sus♭9'], [0, 1, 7, 10], [5, 8, 15]]]
+
+suffixMap = {
+    '': 0,
+    '-': 7,
+    '-Δ': 5,
+    '-♭6': 15,
+    '7': 6,
+    '7alt': 16,
+    '7♯11': 13,
+    '7♯5': 12,
+    'aug': 3,
+    'dim': 2,
+    'm': 1,
+    'sus': 17,
+    'sus♭9': 18,
+    '°': 9,
+    'Δ': 4,
+    'Δ♯4': 10,
+    'Δ♯5': 11,
+    'φ': 8,
+    'φ♯2': 14}
+
+scaleVectorMap = {
+    (0, 1, 3, 4, 6, 8, 10): 16,
+    (0, 1, 7, 10): 18,
+    (0, 2, 3, 6, 10): 14,
+    (0, 3, 6): 2,
+    (0, 3, 6, 9): 9,
+    (0, 3, 6, 10): 8,
+    (0, 3, 7): 1,
+    (0, 3, 7, 8, 10): 15,
+    (0, 3, 7, 10): 7,
+    (0, 3, 7, 11): 5,
+    (0, 4, 5, 7, 10): 17,
+    (0, 4, 6, 7, 10): 13,
+    (0, 4, 6, 7, 11): 10,
+    (0, 4, 7): 0,
+    (0, 4, 7, 10): 6,
+    (0, 4, 7, 11): 4,
+    (0, 4, 8): 3,
+    (0, 4, 8, 10): 12,
+    (0, 4, 8, 11): 11}
+
+
+def scaleVectorToModes(scaleVector):
+    indexList = []
+    for i in range(len(modeTable)):
+        l = modeTable[i]
+        v = l[1]
+        if not set.difference(set(scaleVector), set(v)):
+            indexList.append(i)
+    return indexList
+
+
+def createChordModeTable():
+    pp = pprint.PrettyPrinter(indent=4)
+    suffixMap = {}
+    scaleVectorMap = {}
+    for i in range(len(chordQueryTable)):
+        l = chordQueryTable[i]
+        suffixes = l[1]
+        scaleVector = l[2]
+        modeIndex = l[3]
+        modeIndex.extend(scaleVectorToModes(scaleVector))
+        scaleVectorMap[tuple(scaleVector)] = i
+        for s in suffixes:
+            suffixMap[s] = i
+    print("chordQueryTable = ")
+    pp.pprint(chordQueryTable)
+    print("suffixMap = ")
+    pp.pprint(suffixMap)
+    print("scaleVectorMap = ")
+    pp.pprint(scaleVectorMap)
+
+
+def rotate(n, l, toRight=False):
+    llen = len(l)
+    if toRight:
+        return l[-n:] + l[:-n]
+    n1 = (llen - n) % llen
+    return l[-n1:] + l[:-n1]
+
+
+noteNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+diatonicScales = ['C', 0, 'D', 0, 'E', 'F', 0, 'G', 0, 'A', 0, 'B']
+melodicScales = ['C', 0, 'D', 'E-', 0, 'F', 0, 'G', 0, 'A', 0, 'B']
+diminishedScales = ['F', 0, 'G', 'A-', 0, 'A#', 'B', 0, 'C#', 'D', 0, 'E']
+fifthCircleNames = ['F', 'C', 'G', 'D', 'A', 'E', 'B', 'Cb', 'F#', 'Gb', 'C#', 'Db', 'Ab', 'Eb', 'Bb']
+noteNames = ['C', 'D', 'Eb', 'E', 'F', 'G', 'A', 'B']
+fixKeys = {'G#': 'Ab', 'D#': 'Eb', 'Fb': 'E', 'B#': 'C', 'E#': 'F'}
+
+
+def getAccidental(key):
+    alter = 0
+    if len(key) > 1:
+        ct = key.count('-') or key.count('b')
+        if ct > 0:
+            alter = -ct
+        ct = key.count('#')
+        if ct > 0:
+            alter = ct
+    return alter
+
+
+def getStep(key):
+    return key[0]
+
+
+def getInterval(n1, n2):
+    pass
+
+
+def toScales(key, scaleVector, scales):
+    alter = getAccidental(key)
+    step = getStep(key)
+    scaleCount = len(scales)
+    idx = scales.index(step)
+    l = rotate(idx, scales)
+    indexList = []
+    scaleSteps = []
+    for i in range(scaleCount):
+        if type(l[i]) == str:
+            indexList.append(i)
+            scaleSteps.append(l[i])
+    a1 = np.array(indexList)
+    a2 = np.array(scaleVector)
+    dist = a2 - a1 + alter
+    notes = []
+    for n,d in zip(scaleSteps, dist):
+        if d > 0:
+            note = "{}{}".format(n, '#' * d)
+        elif d < 0:
+            note = "{}{}".format(n, '-' * -d)
+        else:
+            note = n
+        notes.append(note)
+    return notes
+
+
+def toDiatonicScales(key, scaleVector):
+    return toScales(key, scaleVector, diatonicScales)
+
+
+def toMelodicScales(key, scaleVector):
+    return toScales(key, scaleVector, diatonicScales)
+
+
+def toDiminishedScales(key, scaleVector):
+    alter = getAccidental(key)
+    step = getStep(key)
+    idx = noteNames.index(step)
+    l = rotate(idx, noteNames)
+
+
+def toWholeToneScales(key, scaleVector):
+    pass
+
+
+def toChord(key, romanNum):
+    pass
+
 
 def chord_demo():
-    demo11()
+    debug = 0
+    if debug:
+        k = 'G'
+        l = toDiminishedScales(k, diminishedScalesMap[k])
+        print(l)
+        return
+    for m,v in diatonicsMap.items():
+        print(m)
+        for k in noteNames:
+            l = toDiatonicScales(k, v)
+            print(k, l)
+    for m,v in melodicMinors.items():
+        print(m)
+        for k in noteNames:
+            l = toMelodicScales(k, v)
+            print(k, l)
 
 
 if  __name__ == "__main__":
