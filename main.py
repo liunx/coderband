@@ -1,23 +1,43 @@
 #!/usr/bin/env python3
 
 import kivy
+import json
 kivy.require('1.4.2')
 from kivy.app import App
 from kivy.config import Config
-from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
+from kivy.lang.parser import global_idmap
+from kivy.properties import ObjectProperty, StringProperty, ListProperty
 
-Config.set('graphics', 'width', '1024')
-Config.set('graphics', 'height', '768')
+Config.set('graphics', 'width', '1600')
+Config.set('graphics', 'height', '400')
 
 
 class Controller(BoxLayout):
-    label_wid = ObjectProperty()
-    info = StringProperty()
+    mode = ObjectProperty()
+    time_signature = ObjectProperty()
+    style = ObjectProperty()
+    instruments = ListProperty()
+    rhythm_pattern = ObjectProperty()
+    chord_progress = ObjectProperty()
+    tempo = ObjectProperty()
+    dynamics = ObjectProperty()
+    swing = ObjectProperty()
+    timbre = ObjectProperty()
+    humanlize = ObjectProperty()
+    expression = ObjectProperty()
+    improvisation = ObjectProperty()
 
     def do_action(self):
-        self.label_wid.text = 'My label after button press'
-        self.info = 'New info text'
+        print("do action!")
+        print(self.instruments, self.mode.text)
+
+    def json_save(self):
+        pass
+
+    def json_load(self):
+        pass
+
 
 class CoderBandApp(App):
     '''The kivy App that runs the main root. All we do is build a catalog

@@ -2,41 +2,332 @@
 #:import KivyLexer kivy.extras.highlight.KivyLexer
 
 <Controller>:
-    tempo: tempo
     mode: mode
+    time_signature: time_signature
     style: style
+    rhythm_pattern: rhythm_pattern
+    chord_progress: chord_progress
+    tempo: tempo
     dynamics: dynamics
     swing: swing
     timbre: timbre
-    instruments: instruments
     humanlize: humanlize
     expression: expression
-    chord_progress: chord_progress
-    time_signature: time_signature
-    bar_amount: bar_amount
-    rhythm_pattern: rhythm_pattern
     improvisation: improvisation
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 20
+    instrument_piano: instrument_piano
+    instrument_guitar: instrument_guitar
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 0.2
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    orientation: 'vertical'
+    GridLayout:
+        cols: 3
+        size_hint: 1, None
+        height: '45sp'
+        width: '108sp'
         Label:
-            id: tempo
-            text: 'tempo'
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 20
+            text: 'CoderBand'
+            halign: 'auto'
         Label:
-            id: tempo
-            text: 'tempo'
+        Button:
+            width: '108sp'
+            text: 'Done'
+            on_release: root.do_action()
     BoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        Label:
-            id: tempo
-            text: 'tempo'
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        Label:
-            id: tempo2
-            text: 'tempo'
+        GridLayout:
+            rows: 3
+            Spinner:
+                id: mode
+                text: 'C'
+                values: ('C', 'D', 'E', 'F', 'G', 'A', 'B')
+                size_hint_y: None
+                height: '48dp'
+            Label:
+            Label:
+                text: 'mode'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+        GridLayout:
+            rows: 3
+            Spinner:
+                id: time_signature
+                text: '4/4'
+                values: ('4/4', '2/4', '3/4', '6/8', '3/8')
+                size_hint_y: None
+                height: '48dp'
+            Label:
+            Label:
+                text: 'time signature'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+        GridLayout:
+            rows: 3
+            Spinner:
+                id: style
+                text: 'Pop'
+                values: ('Pop', 'Folk', 'Rock', 'Classic', 'Jazz', 'Blues', 'Chinese')
+                size_hint_y: None
+                height: '48dp'
+            Label:
+            Label:
+                text: 'style'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+        GridLayout:
+            rows: 3
+            Spinner:
+                id: rhythm_pattern
+                text: 'Rock'
+                values: ('Rock', 'Mach')
+                size_hint_y: None
+                height: '48dp'
+            Label:
+            Label:
+                text: 'rhythm_pattern'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+        GridLayout:
+            rows: 3
+            Spinner:
+                id: chord_progress
+                text: 'Canon'
+                values: ('Canon', 'Jazz')
+                size_hint_y: None
+                height: '48dp'
+            Label:
+            Label:
+                text: 'chord_progress'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+        GridLayout:
+            rows: 3
+            Button:
+                text: 'instruments'
+                on_release: instruments.open(self)
+                size_hint_y: None
+                height: '48dp'
+            Widget:
+                on_parent: instruments.dismiss()
+            DropDown:
+                id: instruments
+                GridLayout:
+                    size_hint_y: None
+                    height: '48dp'
+                    cols: 2
+                    Label:
+                        text: 'piano'
+                    CheckBox:
+                        id: instrument_piano
+                        size_hint_y: None
+                        height: '48dp'
+                        on_active:
+                            if self.active: root.instruments.append('piano')
+                            else: root.instruments.remove('piano')
+                GridLayout:
+                    size_hint_y: None
+                    height: '48dp'
+                    cols: 2
+                    Label:
+                        text: 'guitar'
+                    CheckBox:
+                        id: instrument_guitar
+                        size_hint_y: None
+                        height: '48dp'
+                        on_active:
+                            if self.active: root.instruments.append('guitar')
+                            else: root.instruments.remove('guitar')
+        GridLayout:
+            rows: 3
+            TextInput:
+                size_hint_y: None
+                height: '32dp'
+                input_filter: 'int'
+                multiline: False
+                text: str(int(tempo.value))
+                on_text: tempo.value = int(self.text)
+            Slider:
+                id: tempo
+                width: '48dp'
+                orientation: 'vertical'
+                max: 300
+                min: 40
+                step: 1
+                value: 120
+                on_value:
+                    if self.value > self.max: self.value = self.max
+                    if self.value < self.min: self.value = self.min
+            Label:
+                text: 'tempo'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+        GridLayout:
+            rows: 3
+            TextInput:
+                size_hint_y: None
+                height: '32dp'
+                input_filter: 'int'
+                multiline: False
+                text: str(int(dynamics.value))
+                on_text: dynamics.value = int(self.text)
+            Slider:
+                id: dynamics
+                width: '48dp'
+                orientation: 'vertical'
+                max: 100
+                min: 0
+                step: 1
+                value: 50
+                on_value:
+                    if self.value > self.max: self.value = self.max
+                    if self.value < self.min: self.value = self.min
+            Label:
+                text: 'dynamics'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+        GridLayout:
+            rows: 3
+            TextInput:
+                size_hint_y: None
+                height: '32dp'
+                input_filter: 'int'
+                multiline: False
+                text: str(int(swing.value))
+                on_text: swing.value = int(self.text)
+            Slider:
+                id: swing
+                width: '48dp'
+                orientation: 'vertical'
+                max: 100
+                min: 0
+                step: 1
+                value: 50
+                on_value:
+                    if self.value > self.max: self.value = self.max
+                    if self.value < self.min: self.value = self.min
+            Label:
+                text: 'swing'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+        GridLayout:
+            rows: 3
+            TextInput:
+                size_hint_y: None
+                height: '32dp'
+                input_filter: 'int'
+                multiline: False
+                text: str(int(timbre.value))
+                on_text: timbre.value = int(self.text)
+            Slider:
+                id: timbre
+                width: '48dp'
+                orientation: 'vertical'
+                max: 100
+                min: 0
+                step: 1
+                value: 50
+                on_value:
+                    if self.value > self.max: self.value = self.max
+                    if self.value < self.min: self.value = self.min
+            Label:
+                text: 'timbre'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+        GridLayout:
+            rows: 3
+            TextInput:
+                size_hint_y: None
+                height: '32dp'
+                input_filter: 'int'
+                multiline: False
+                text: str(int(humanlize.value))
+                on_text: humanlize.value = int(self.text)
+            Slider:
+                id: humanlize
+                width: '48dp'
+                orientation: 'vertical'
+                max: 100
+                min: 0
+                step: 1
+                value: 50
+                on_value:
+                    if self.value > self.max: self.value = self.max
+                    if self.value < self.min: self.value = self.min
+            Label:
+                text: 'humanlize'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+        GridLayout:
+            rows: 3
+            TextInput:
+                size_hint_y: None
+                height: '32dp'
+                input_filter: 'int'
+                multiline: False
+                text: str(int(expression.value))
+                on_text: expression.value = int(self.text)
+            Slider:
+                id: expression
+                width: '48dp'
+                orientation: 'vertical'
+                max: 100
+                min: 0
+                step: 1
+                value: 50
+                on_value:
+                    if self.value > self.max: self.value = self.max
+                    if self.value < self.min: self.value = self.min
+            Label:
+                text: 'expression'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+        GridLayout:
+            rows: 3
+            TextInput:
+                size_hint_y: None
+                height: '32dp'
+                input_filter: 'int'
+                multiline: False
+                text: str(int(improvisation.value))
+                on_text: improvisation.value = int(self.text)
+            Slider:
+                id: improvisation
+                width: '48dp'
+                orientation: 'vertical'
+                max: 100
+                min: 0
+                step: 1
+                value: 50
+                on_value:
+                    if self.value > self.max: self.value = self.max
+                    if self.value < self.min: self.value = self.min
+            Label:
+                text: 'improvisation'
+                size: self.texture_size
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
