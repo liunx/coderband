@@ -28,14 +28,18 @@
         size_hint: 1, None
         height: '45sp'
         width: '108sp'
-        Label:
-            text: 'CoderBand'
-            halign: 'auto'
-        Label:
+        Button:
+            width: '108sp'
+            text: 'Save'
+            on_release: root.do_action('save')
+        Button:
+            width: '108sp'
+            text: 'Load'
+            on_release: root.do_action('load')
         Button:
             width: '108sp'
             text: 'Done'
-            on_release: root.do_action()
+            on_release: root.do_action('done')
     BoxLayout:
         GridLayout:
             rows: 3
