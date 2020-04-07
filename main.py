@@ -23,13 +23,30 @@ def load_configure():
 
 
 def init_ui():
-    print("Init UI!!!")
+    print("TODO: Init UI!!!")
+
+
+def init_cmd():
+    print("TODO: Init CMD!!!")
+
+
+def init_web():
+    print("TODO: Init WEB!!!")
+
+
+def get_options():
+    print("TODO: get options!!!")
 
 
 def process(cfg, cls):
     obj = cls(cfg)
+    # step 6: analysis
     obj.analysis()
     obj.composer()
+
+
+def output():
+    pass
 
 
 def load_modules(modspath, modsmap):
@@ -45,12 +62,22 @@ def load_modules(modspath, modsmap):
 if __name__ == "__main__":
     styles = {}
     instruments = {}
-    cfg = load_configure()
+    # step 1: load components
     load_modules('styles', styles)
     load_modules('instruments', instruments)
+    # step 2: get options from command line
+    get_options()
+    # step 3: startup user interface
     init_ui()
+    init_cmd()
+    init_web()
+    # step 4: load default configure file
+    cfg = load_configure()
     cls = styles.get(cfg['style'])
     if not cls:
         print("Unkown style {}!!!".format(cfg['style']))
         raise SystemExit
+    # step 5: process settings
     process(cfg, cls)
+    # step 6: converter
+    output()
