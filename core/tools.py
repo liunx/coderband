@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import music21
+#import music21
 import math
 import numpy as np
 import pprint
@@ -588,15 +588,15 @@ def toWholeToneScales(key, scaleVector):
     pass
 
 
-def toChord(key, romanNum):
-    pass
+def toChord(key, scaleVector):
+    return toScales(key, scaleVector, diatonicScales)
 
 
 def chord_demo():
-    debug = 0
+    debug = 1
     if debug:
-        k = 'G'
-        l = toDiminishedScales(k, diminishedScalesMap[k])
+        k = 'C'
+        l = toDiatonicScales(k, diatonicsMap['Ionian'])
         print(l)
         return
     for m,v in diatonicsMap.items():
