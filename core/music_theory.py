@@ -3,12 +3,6 @@ from fractions import Fraction
 from collections import namedtuple
 
 
-CHROMATIC_CIRCLE = ['C', ['C+', 'D-'],
-                    'D', ['D+', 'E-'],
-                    'E', 'F', ['F+', 'G-'],
-                    'G', ['G+', 'A-'],
-                    'A', ['A+', 'B-'], 'B']
-
 # | prefer name | other names | intervals |
 DIATONIC_SCALES = [
     ['ionian mode', ['mjaor scale'], [0, 2, 4, 5, 7, 9, 11]],
@@ -173,6 +167,15 @@ class FreqRatio():
     def __init__(self):
         pass
 
+    def chromatic_freq_sizes(self):
+        l = []
+        for fr in self.FREQ_RATIOS:
+            f = Fraction(fr)
+            n = f.numerator
+            d = f.denominator
+            l.append(n * d)
+        return l
+
     def calc_freq_radio_size(self, intervals):
         l = list(intervals)
         l.sort()
@@ -199,8 +202,6 @@ SCALES_QUERY_TABLE = {
     'aeolian': ['diatonic', DIATONIC_SCALES[5]],
     'locrian': ['diatonic', DIATONIC_SCALES[6]],
     'melodic minor': ['melodic', MELODIC_MINOR_SCALES[0]],
-    'phrygidorian': ['melodic', MELODIC_MINOR_SCALES[1]],
-    'lydian augmented': ['melodic', MELODIC_MINOR_SCALES[2]],
     'lydian dominant': ['melodic', MELODIC_MINOR_SCALES[3]],
     'melodic major': ['melodic', MELODIC_MINOR_SCALES[4]],
     'aeolocrian': ['melodic', MELODIC_MINOR_SCALES[5]],
@@ -235,7 +236,7 @@ class Scales:
             ct = key.count('-')
             if ct > 0:
                 alter = -ct
-            ct = key.count('+')
+            ct = key.count('#')
             if ct > 0:
                 alter = ct
         return alter
@@ -269,7 +270,7 @@ class Scales:
         notes = []
         for n,d in zip(scale_steps, dist):
             if d > 0:
-                note = "{}{}".format(n, '+' * d)
+                note = "{}{}".format(n, '#' * d)
             elif d < 0:
                 note = "{}{}".format(n, '-' * -d)
             else:
@@ -286,7 +287,7 @@ class Scales:
         curr_alter = self.get_accidentals(note)
         final_alter = curr_alter + alter
         if final_alter > 0:
-            nt = "{}{}".format(step, '+' * final_alter)
+            nt = "{}{}".format(step, '#' * final_alter)
         elif final_alter < 0:
             nt = "{}{}".format(step, '-' * -final_alter)
         else:
@@ -383,6 +384,23 @@ class Chord(Scales):
         elif query[0] == 'seventh':
             chord = self.to_seventh(scales)
         return chord
+
+
+class RomanNumeral(Chord):
+    roman_numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
+
+    def __init__(self, key):
+        self.__notes = self.to_scales(key, 'diatonic')
+
+    def parser(self, rn):
+        offset = rn[0]
+        pass
+
+    def to_note(self, rn):
+        pass
+
+    def to_chord(self, rn):
+        pass
 
 
 class ChordProgression():

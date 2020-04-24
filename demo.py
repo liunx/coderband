@@ -1,29 +1,9 @@
 #!/usr/bin/env python3
 
 import numpy as np
-from collections import namedtuple
 import core.tools as tools
 import core.music_theory as theory
-
-class Base:
-    def __init__(self):
-        pass
-
-    def __query(self):
-        print("query from Base")
-
-    def hello(self):
-        self.__query()
-
-
-class Demo(Base):
-    def __init__(self):
-        pass
-
-    def __query(self):
-        print("query from Demo")
-
-
+import core.converter as convt
 
 def demo03():
     key = 'C'
@@ -41,27 +21,66 @@ def demo03():
     notes = obj.to_scales(key, 'bebop dominant')
     print(notes)
 
-
-def demo04():
-    demo = Demo()
-    demo.hello()
-
-
-def demo05():
-    User = namedtuple('User', ['name', 'sex', 'age'])
-    user = User._make(['Tom', 'male', 21])
-    print(user)
-
-
-
 def demo06():
-    key = 'C'
+    key = 'G'
     obj = theory.Chord()
     chords = obj.to_chord(key, 'maj7')
     print(chords)
     chords = obj.to_chord(key, 'min7')
     print(chords)
 
+def demo07():
+    key = 'C'
+    ts = '4/4'
+    obj = theory.Chord()
+    staff = convt.Staff(key, ts)
+    chord = obj.to_chord(key, 'maj7')
+    staff.add_chord(chord, type='whole')
+    chord = obj.to_chord(key, 'min7')
+    staff.add_chord(chord, type='whole')
+    chord = ['G', 'E', 'C']
+    staff.add_chord(chord, type='whole')
+    staff.show_mxml()
+
+def demo08():
+    roman_numerals = ['io', 'i', 'I', 'I+', 'io7', 'i-7', 'i7', 'I-7', 'I7', 'I+7']
+    key = 'C4'
+    ts = '4/4'
+    staff = convt.Staff(key, ts)
+    for rn in roman_numerals:
+        staff.add_roman_numeral(rn, key)
+    staff.show_text()
+
+
+def demo09():
+    roman_numerals = ['io', 'i', 'I', 'I+', 'io7', 'i-7', 'i7', 'I-7', 'I7', 'I+7']
+    key = 'C4'
+    ts = '4/4'
+    fr = theory.FreqRatio()
+    staff = convt.Staff(key, ts)
+    frmap = {}
+    for rn in roman_numerals:
+        intervals = staff.to_intervals(rn, key)
+        prod = fr.calc_freq_radio_size(intervals)
+        #print("{:4}: {:>20}".format(rn, prod))
+        frmap[prod] = rn
+    keys = list(frmap.keys())
+    keys.sort()
+    for k in keys:
+        print("{:4}: {:>20}".format(frmap[k], k))
+
+def math_demo():
+    ay = np.array([1, 5, 1])
+    print(ay.mean(), ay.var(), ay.std())
+    ay = np.array([1, 5, 1, 1])
+    print(ay.mean(), ay.var(), ay.std())
+
+def demo10():
+    fr = theory.FreqRatio()
+    l = fr.chromatic_freq_sizes()
+    print(l)
+
 
 if __name__ == "__main__":
-    demo06()
+    demo10()
+    #math_demo()
