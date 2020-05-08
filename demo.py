@@ -4,6 +4,8 @@ import numpy as np
 import core.tools as tools
 import core.music_theory as theory
 import core.converter as convt
+import random
+import time
 
 def demo03():
     key = 'C'
@@ -21,26 +23,6 @@ def demo03():
     notes = obj.to_scales(key, 'bebop dominant')
     print(notes)
 
-def demo06():
-    key = 'G'
-    obj = theory.Chord()
-    chords = obj.to_chord(key, 'maj7')
-    print(chords)
-    chords = obj.to_chord(key, 'min7')
-    print(chords)
-
-def demo07():
-    key = 'C'
-    ts = '4/4'
-    obj = theory.Chord()
-    staff = convt.Staff(key, ts)
-    chord = obj.to_chord(key, 'maj7')
-    staff.add_chord(chord, type='whole')
-    chord = obj.to_chord(key, 'min7')
-    staff.add_chord(chord, type='whole')
-    chord = ['G', 'E', 'C']
-    staff.add_chord(chord, type='whole')
-    staff.show_mxml()
 
 def demo08():
     roman_numerals = ['io', 'i', 'I', 'I+', 'io7', 'i-7', 'i7', 'I-7', 'I7', 'I+7']
@@ -69,18 +51,73 @@ def demo09():
     for k in keys:
         print("{:4}: {:>20}".format(frmap[k], k))
 
+
 def math_demo():
-    ay = np.array([1, 5, 1])
-    print(ay.mean(), ay.var(), ay.std())
-    ay = np.array([1, 5, 1, 1])
-    print(ay.mean(), ay.var(), ay.std())
+    ay = np.array([1, 5, 4, 1])
+    print(ay, ay.mean(), ay.var(), ay.std())
+    ay = np.array([1, 4, 5, 1])
+    print(ay, ay.mean(), ay.var(), ay.std())
+    ay = np.array([1, 1, 4, 5])
+    print(ay, ay.mean(), ay.var(), ay.std())
+    ay = np.array([1, 1, 5, 4])
+    print(ay, ay.mean(), ay.var(), ay.std())
+
 
 def demo10():
     fr = theory.FreqRatio()
     l = fr.chromatic_freq_sizes()
-    print(l)
+    freq_map = dict(zip(l, roman_degrees))
+    l.sort()
+    for i in l:
+        print('{:6}: {}'.format(i, freq_map[i]))
+
+
+roman_degrees = ['I', '-II', 'II', '-III', 'III', 'IV', '-V', 'V', '-VI', 'VI', '-VII', 'VII']
+chord_qualities = ['', 'm', '7', 'm-7', '-7']
+
+def demo13():
+    degree_weights = [5.0, 3.0, 2.0, 2.0, 4.0, 6.0, 1.0, 8.0, 1.0, 6.0, 2.0, 1.0]
+    quality_weights = [1.0, 1.0, 0.5, 0.5, 0.7]
+    kv = 4
+    i = 0
+    while True:
+        degrees = random.choices(roman_degrees, weights=degree_weights, k=kv)
+        for x in range(10):
+            qualities = random.choices(chord_qualities, weights=quality_weights, k=kv)
+            s = ''
+            for d,q in zip(degrees, qualities):
+                if bool(q) and q[0] == 'm':
+                    d = d.lower()
+                    n = '{}{}'.format(d, q[1:])
+                    s = s + '{:8}'.format(n)
+                else:
+                    n = '{}{}'.format(d, q[1:])
+                    s = s + '{:8}'.format(n)
+
+            try:
+                print('{:10}: {}'.format(i, s))
+                time.sleep(0.0001)
+            except KeyboardInterrupt:
+                return
+
+        i = i + 1
+
+
+def demo14():
+    degree_weights = [5.0, 3.0, 2.0, 2.0, 4.0, 6.0, 1.0, 8.0, 1.0, 6.0, 2.0, 1.0]
+    kv = 4
+    key = 'C4'
+    ts = '4/4'
+    staff = convt.Staff(key, ts)
+    for i in range(100):
+        degrees = random.choices(roman_degrees, weights=degree_weights, k=kv)
+        for rn in degrees:
+            staff.add_roman_numeral(rn, key)
+        staff.add_rest()
+
+    #staff.show_text()
+    staff.write_xml('./chord_progress.xml')
 
 
 if __name__ == "__main__":
-    demo10()
-    #math_demo()
+    demo14()

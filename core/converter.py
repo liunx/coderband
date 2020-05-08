@@ -12,7 +12,7 @@ class Staff:
         self.stream.append(r)
 
     def write_xml(self, filename):
-        self.stream.write('musicxml', ftp=filename)
+        self.stream.write('musicxml', fp=filename)
 
     def show_mxml(self):
         self.stream.show()
@@ -33,9 +33,14 @@ class Staff:
     def add_notes(self, notes):
         pass
 
-    def add_roman_numeral(self, rn, key, type='whole'):
+    def add_rest(self):
+        r = music21.note.Rest(type='whole')
+        self.stream.append(r)
+
+    def add_roman_numeral(self, rn, key, type='half'):
         rf = music21.roman.RomanNumeral(rn, key)
         ch = music21.chord.Chord(rf, type=type)
+        ch.addLyric(rn)
         self.stream.append(ch)
 
     def to_intervals(self, rn, key):
