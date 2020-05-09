@@ -26,12 +26,14 @@ def demo03():
 
 def demo08():
     roman_numerals = ['io', 'i', 'I', 'I+', 'io7', 'i-7', 'i7', 'I-7', 'I7', 'I+7']
+    roman_numerals = ['io', 'i', 'I', 'I+', 'I7', 'I+7']
     key = 'C4'
     ts = '4/4'
     staff = convt.Staff(key, ts)
     for rn in roman_numerals:
-        staff.add_roman_numeral(rn, key)
-    staff.show_text()
+        staff.add_roman_numeral(rn, key, type='whole')
+        staff.add_rest()
+    staff.show_midi()
 
 
 def demo09():
@@ -119,5 +121,69 @@ def demo14():
     staff.write_xml('./chord_progress.xml')
 
 
+chord_progressions = [
+    ['I', 'IV', 'V', 'I'],
+    ['I', 'V', 'IV', 'I'],
+    ['I', 'IV', 'V', 'IV'],
+    ['I', 'vi', 'IV', 'V'],
+    ['I', 'V', 'vi', 'IV'],
+    ['I', 'IV', 'vi', 'V'],
+    ['I', 'vi', 'ii', 'V'],
+    ['I', 'vi7', 'ii7', 'V7'],
+    ['I', 'VI', 'ii', 'V'],
+    ['I', 'VI7', 'ii7', 'V7'],
+    ['I', 'VI', 'II', 'V'],
+    ['I', 'VI7', 'II7', 'V7'],
+    ['ii', 'V', 'I', 'vi'],
+    ['ii', 'V7', 'I', 'vi'],
+    ['iii', 'vi', 'ii', 'V'],
+    ['iii7', 'vi7', 'ii7', 'V7'],
+    ['ii', 'V', 'I', 'IV'],
+    ['ii7', 'V7', 'I', 'IV'],
+    ['I', 'V', 'ii', 'IV'],
+    ['I', 'ii', 'IV', 'I'],
+    ['ii', 'IV', 'I', 'I'],
+    ['I', '-VII', 'IV', 'I'],
+    ['I', 'V', '-VII', 'IV'],
+    ['i', 'III', '-VII', 'i'],
+    ['i', 'III', '-VII', 'IV'],
+    ['i', 'III', '-VII', 'iv'],
+    ['i', '-VII', '-VI', 'V'],
+    ['I', 'V', 'vi', 'IV'],
+    ['I', 'IV', 'I', 'V'],
+]
+
+cp01 = [
+    ['I', 'IV', 'V7', 'I'],
+    ['i7', 'iv7', 'v7', 'i7'],
+    ['I-7', 'IV-7', 'V-7', 'I-7'],
+    ['I7', 'IV7', 'V7', 'I7'],
+    ['i', 'iv', 'v', 'i'],
+    ['I', 'IV', 'V', 'I'],
+]
+
+cp02 = [
+    ['I', 'II', 'III', 'IV'],
+    ['i', 'ii', 'iii', 'iv'],
+]
+
+def show_midi(key, ts, l):
+    key = 'C3'
+    ts = '4/4'
+    staff = convt.Staff(key, ts)
+    for p in l:
+        for rn in p:
+            staff.add_roman_numeral(rn, key)
+        staff.add_rest()
+    staff.show_midi()
+
+
+def demo15():
+    key = 'C3'
+    ts = '4/4'
+    show_midi(key, ts, cp02)
+
+
 if __name__ == "__main__":
-    demo14()
+    demo15()
+    #demo08()

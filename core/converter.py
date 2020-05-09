@@ -14,11 +14,17 @@ class Staff:
     def write_xml(self, filename):
         self.stream.write('musicxml', fp=filename)
 
+    def write_midi(self, filename):
+        self.stream.write('midi', fp=filename)
+
     def show_mxml(self):
         self.stream.show()
 
     def show_text(self):
         self.stream.show('text')
+
+    def show_midi(self):
+        self.stream.show('midi')
 
     def add_chord(self, chord, type='whole'):
         ch = music21.chord.Chord(chord, type=type)

@@ -422,3 +422,7 @@ class Style():
 
 class Instruments():
     pass
+
+
+class EvalSystem():
+    pass
