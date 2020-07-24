@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE lmms-project>
+<lmms-project creatorversion="1.2.2" version="1.0" creator="LMMS" type="song">
+  <head masterpitch="0" bpm="140" mastervol="100" timesig_denominator="4" timesig_numerator="4" />
+  <song>
+    <trackcontainer visible="1" width="600" y="5" maximized="0" type="song" x="5" minimized="0" height="300">
+      <track solo="0" name="Beat/Bassline 0" muted="0" type="1">
+        <bbtrack>
+          <trackcontainer visible="1" width="700" y="208" maximized="0" type="bbtrackcontainer" x="8" minimized="0" height="400">
+            <track type="0" muted="0" name="Kicker" solo="0">
+              <instrumenttrack vol="100" basenote="57" pitch="0" fxch="0" usemasterpitch="1" pan="0" pitchrange="1">
+                <instrument name="kicker">
+                  <kicker dist="0.8" distend="0.8" decay="440" gain="1" env="0.163" startnote="1" decay_syncmode="0" endnote="0" startfreq="150" decay_numerator="4" click="0.4" noise="0" endfreq="40" decay_denominator="4" slope="0.06" version="1" />
+                </instrument>
+                <eldata fcut="14000" fres="0.5" fwet="0" ftype="0">
+                  <elvol pdel="0" hold="0.5" lshp="0" lspd_syncmode="0" latt="0" dec="0.5" userwavefile="" ctlenvamt="0" sustain="0.5" lspd_denominator="4" lpdel="0" lspd="0.1" amt="0" att="0" rel="0.1" x100="0" lspd_numerator="4" lamt="0" />
+                  <elcut pdel="0" hold="0.5" lshp="0" lspd_syncmode="0" latt="0" dec="0.5" userwavefile="" ctlenvamt="0" sustain="0.5" lspd_denominator="4" lpdel="0" lspd="0.1" amt="0" att="0" rel="0.1" x100="0" lspd_numerator="4" lamt="0" />
+                  <elres pdel="0" hold="0.5" lshp="0" lspd_syncmode="0" latt="0" dec="0.5" userwavefile="" ctlenvamt="0" sustain="0.5" lspd_denominator="4" lpdel="0" lspd="0.1" amt="0" att="0" rel="0.1" x100="0" lspd_numerator="4" lamt="0" />
+                </eldata>
+                <chordcreator chordrange="1" chord="0" chord-enabled="0" />
+                <arpeggiator arp="0" arp-enabled="0" arpmiss="0" arpskip="0" arprange="1" arptime_syncmode="0" arpdir="0" arpcycle="0" arptime_numerator="4" arptime_denominator="4" arpgate="100" arpmode="0" arptime="200" />
+                <midiport outputchannel="1" fixedoutputnote="-1" outputcontroller="0" writable="0" readable="0" inputchannel="0" fixedinputvelocity="-1" outputprogram="1" inputcontroller="0" basevelocity="63" fixedoutputvelocity="-1" />
+                <fxchain numofeffects="0" enabled="0" />
+              </instrumenttrack>
+              <pattern muted="0" pos="0" steps="16" name="Kicker" type="0">
+                <note key="57" len="-192" pan="0" pos="12" vol="100" />
+                <note key="57" len="-192" pan="0" pos="48" vol="100" />
+                <note key="57" len="-192" pan="0" pos="60" vol="100" />
+                <note key="57" len="-192" pan="0" pos="96" vol="100" />
+                <note key="57" len="-192" pan="0" pos="108" vol="100" />
+                <note key="57" len="-192" pan="0" pos="144" vol="100" />
+              </pattern>
+              <pattern muted="0" pos="192" steps="16" name="Kicker" type="0">
+                <note key="57" len="-192" pan="0" pos="0" vol="100" />
+                <note key="57" len="-192" pan="0" pos="48" vol="100" />
+                <note key="57" len="-192" pan="0" pos="96" vol="100" />
+                <note key="57" len="-192" pan="0" pos="144" vol="100" />
+              </pattern>
+            </track>
+          </trackcontainer>
+        </bbtrack>
+        <bbtco color="4286611584" len="192" muted="0" name="" pos="768" usestyle="1" />
+        <bbtco color="4286611584" len="192" muted="0" name="" pos="960" usestyle="1" />
+        <bbtco color="4286611584" len="192" muted="0" name="" pos="1152" usestyle="1" />
+        <bbtco color="4286611584" len="192" muted="0" name="" pos="1344" usestyle="1" />
+      </track>
+      <track muted="0" name="Audio" solo="0" type="0">
+        <instrumenttrack pitch="0" fxch="0" basenote="57" pitchrange="1" vol="100" pan="0" usemasterpitch="1">
+          <instrument name="audiofileprocessor">
+            <audiofileprocessor interp="1" src="drums/bassdrum01.ogg" amp="100" sframe="0" stutter="0" lframe="0" reversed="0" eframe="1" looped="0" />
+          </instrument>
+          <eldata fwet="0" fres="0.5" ftype="0" fcut="14000">
+            <elvol x100="0" amt="0" lspd_numerator="4" dec="0.5" lshp="0" lpdel="0" lspd_syncmode="0" lspd_denominator="4" att="0" hold="0.5" ctlenvamt="0" pdel="0" rel="0.1" lspd="0.1" userwavefile="" latt="0" sustain="0.5" lamt="0" />
+            <elcut x100="0" amt="0" lspd_numerator="4" dec="0.5" lshp="0" lpdel="0" lspd_syncmode="0" lspd_denominator="4" att="0" hold="0.5" ctlenvamt="0" pdel="0" rel="0.1" lspd="0.1" userwavefile="" latt="0" sustain="0.5" lamt="0" />
+            <elres x100="0" amt="0" lspd_numerator="4" dec="0.5" lshp="0" lpdel="0" lspd_syncmode="0" lspd_denominator="4" att="0" hold="0.5" ctlenvamt="0" pdel="0" rel="0.1" lspd="0.1" userwavefile="" latt="0" sustain="0.5" lamt="0" />
+          </eldata>
+          <chordcreator chord-enabled="0" chordrange="1" chord="0" />
+          <arpeggiator arptime="200" arpgate="100" arp="0" arp-enabled="0" arprange="1" arpmode="0" arpdir="0" arptime_denominator="4" arptime_numerator="4" arpskip="0" arptime_syncmode="0" arpmiss="0" arpcycle="0" />
+          <midiport writable="0" fixedoutputnote="-1" readable="0" fixedoutputvelocity="-1" inputchannel="0" fixedinputvelocity="-1" inputcontroller="0" outputchannel="1" outputprogram="1" basevelocity="63" outputcontroller="0" />
+          <fxchain numofeffects="0" enabled="0" />
+        </instrumenttrack>
+        <pattern muted="0" pos="0" steps="16" name="Audio" type="1">
+          <note key="60" len="24" pan="0" pos="0" vol="141" />
+          <note key="62" len="24" pan="0" pos="24" vol="141" />
+          <note key="64" len="24" pan="0" pos="48" vol="141" />
+          <note key="65" len="24" pan="0" pos="72" vol="141" />
+          <note key="67" len="24" pan="0" pos="96" vol="141" />
+          <note key="69" len="24" pan="0" pos="120" vol="141" />
+          <note key="71" len="24" pan="0" pos="144" vol="141" />
+          <note key="72" len="24" pan="0" pos="168" vol="141" />
+          <note key="69" len="32" pan="0" pos="192" vol="141" />
+          <note key="71" len="32" pan="0" pos="224" vol="141" />
+          <note key="72" len="32" pan="0" pos="256" vol="141" />
+        </pattern>
+      </track>
+      <track muted="0" name="Beat01" solo="0" type="1">
+        <bbtrack />
+        <bbtco color="4286611584" len="192" muted="0" name="" pos="0" usestyle="1" />
+        <bbtco color="4286611584" len="192" muted="0" name="" pos="192" usestyle="1" />
+        <bbtco color="4286611584" len="192" muted="0" name="" pos="384" usestyle="1" />
+        <bbtco color="4286611584" len="192" muted="0" name="" pos="576" usestyle="1" />
+      </track>
+    </trackcontainer>
+    <track solo="0" name="Automation track" muted="0" type="6">
+      <automationtrack />
+      <automationpattern mute="0" name="Numerator" len="192" prog="0" tens="1" pos="0" />
+      <automationpattern mute="0" name="Denominator" len="192" prog="0" tens="1" pos="0" />
+      <automationpattern mute="0" name="Tempo" len="192" prog="0" tens="1" pos="0" />
+      <automationpattern mute="0" name="Master volume" len="192" prog="0" tens="1" pos="0" />
+      <automationpattern mute="0" name="Master pitch" len="192" prog="0" tens="1" pos="0" />
+    </track>
+    <fxmixer visible="0" width="543" y="310" maximized="0" x="5" minimized="0" height="333">
+      <fxchannel volume="1" soloed="0" name="Master" muted="0" num="0">
+        <fxchain numofeffects="0" enabled="0" />
+      </fxchannel>
+    </fxmixer>
+    <ControllerRackView visible="0" width="350" y="329" maximized="0" x="538" minimized="0" height="200" />
+    <pianoroll visible="0" width="860" y="5" maximized="0" x="5" minimized="0" height="480" />
+    <automationeditor visible="0" width="860" y="1" maximized="0" x="1" minimized="0" height="400" />
+    <projectnotes visible="0" width="852" y="10" maximized="0" x="700" minimized="0" height="400">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;"&gt;
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</projectnotes>
+    <timeline lp0pos="0" lp1pos="192" lpstate="0" />
+    <controllers />
+  </song>
+</lmms-project>

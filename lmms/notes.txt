@@ -1,0 +1,5 @@
+tinyNotation: 4/4
+
+c4 d e f g a b c1'
+chord{c1 e g b}
+trip{c4 d e}

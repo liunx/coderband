@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE lmms-project>
+<lmms-project creatorversion="1.2.2" version="1.0" creator="LMMS" type="song">
+  <head masterpitch="0" bpm="140" mastervol="100" timesig_denominator="4" timesig_numerator="4"/>
+  <song>
+    <trackcontainer visible="1" width="600" y="5" maximized="0" type="song" x="5" minimized="0" height="300">
+      <track solo="0" name="Beat/Bassline 0" muted="0" type="1">
+        <bbtrack>
+          <trackcontainer visible="1" width="700" y="208" maximized="0" type="bbtrackcontainer" x="8" minimized="0" height="400"/>
+        </bbtrack>
+      </track>
+    <track type="0" muted="0" name="piano" solo="0">
+    <instrumenttrack vol="100" basenote="57" pitch="0" fxch="0" usemasterpitch="1" pan="0" pitchrange="1">
+      <instrument name="sf2player">
+        <sf2player bank="0" chorusSpeed="0.3" gain="1" chorusLevel="2" chorusDepth="8" reverbOn="0" chorusOn="0" reverbWidth="0.5" reverbRoomSize="0.2" patch="0" src="/usr/share/sounds/sf2/FluidR3_GM.sf2" reverbDamping="0" reverbLevel="0.9" chorusNum="3"/>
+      </instrument>
+      <eldata fcut="14000" fres="0.5" fwet="0" ftype="0">
+        <elvol pdel="0" hold="0.5" lshp="0" lspd_syncmode="0" latt="0" dec="0.5" userwavefile="" ctlenvamt="0" sustain="0.5" lspd_denominator="4" lpdel="0" lspd="0.1" amt="0" att="0" rel="0.1" x100="0" lspd_numerator="4" lamt="0"/>
+        <elcut pdel="0" hold="0.5" lshp="0" lspd_syncmode="0" latt="0" dec="0.5" userwavefile="" ctlenvamt="0" sustain="0.5" lspd_denominator="4" lpdel="0" lspd="0.1" amt="0" att="0" rel="0.1" x100="0" lspd_numerator="4" lamt="0"/>
+        <elres pdel="0" hold="0.5" lshp="0" lspd_syncmode="0" latt="0" dec="0.5" userwavefile="" ctlenvamt="0" sustain="0.5" lspd_denominator="4" lpdel="0" lspd="0.1" amt="0" att="0" rel="0.1" x100="0" lspd_numerator="4" lamt="0"/>
+      </eldata>
+      <chordcreator chordrange="1" chord="0" chord-enabled="0"/>
+      <arpeggiator arp="0" arp-enabled="0" arpmiss="0" arpskip="0" arprange="1" arptime_syncmode="0" arpdir="0" arpcycle="0" arptime_numerator="4" arptime_denominator="4" arpgate="100" arpmode="0" arptime="200"/>
+      <midiport outputchannel="1" fixedoutputnote="-1" outputcontroller="0" writable="0" readable="0" inputchannel="0" fixedinputvelocity="-1" outputprogram="1" inputcontroller="0" basevelocity="63" fixedoutputvelocity="-1"/>
+      <fxchain numofeffects="0" enabled="0"/>
+    </instrumenttrack>
+  </track>
+</trackcontainer>
+    <track solo="0" name="Automation track" muted="0" type="6">
+      <automationtrack/>
+      <automationpattern mute="0" name="Numerator" len="192" prog="0" tens="1" pos="0"/>
+      <automationpattern mute="0" name="Denominator" len="192" prog="0" tens="1" pos="0"/>
+      <automationpattern mute="0" name="Tempo" len="192" prog="0" tens="1" pos="0"/>
+      <automationpattern mute="0" name="Master volume" len="192" prog="0" tens="1" pos="0"/>
+      <automationpattern mute="0" name="Master pitch" len="192" prog="0" tens="1" pos="0"/>
+    </track>
+    <fxmixer visible="0" width="543" y="310" maximized="0" x="5" minimized="0" height="333">
+      <fxchannel volume="1" soloed="0" name="Master" muted="0" num="0">
+        <fxchain numofeffects="0" enabled="0"/>
+      </fxchannel>
+    </fxmixer>
+    <ControllerRackView visible="0" width="350" y="329" maximized="0" x="538" minimized="0" height="200"/>
+    <pianoroll visible="0" width="860" y="5" maximized="0" x="5" minimized="0" height="480"/>
+    <automationeditor visible="0" width="860" y="1" maximized="0" x="1" minimized="0" height="400"/>
+    <projectnotes visible="0" width="852" y="10" maximized="0" x="700" minimized="0" height="400">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;"&gt;
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</projectnotes>
+    <timeline lp0pos="0" lp1pos="192" lpstate="0"/>
+    <controllers/>
+  </song>
+</lmms-project>
